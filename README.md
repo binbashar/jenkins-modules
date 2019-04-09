@@ -9,7 +9,10 @@
 
 ### Devops Groovy Module files import
 - Orig Ref @ https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/load-from-file/pipeline.groovy
-```
+
+```groovy
+#!/usr/bin/env groovy
+
 node {
     // Load the file 'externalMethod.groovy' from the current directory, into a variable called "externalMethod".
     def externalMethod = load("externalMethod.groovy")
@@ -30,7 +33,9 @@ node {
 
 - **Modules:** Slack & AWS SSM Parameter Store helper modules.
 
-```
+```groovy
+#!/usr/bin/env groovy
+
 node {
     String gitJenkinsModName = 'jenkins_modules'
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
@@ -89,7 +94,7 @@ node {
 
 - **Module:** AWS ECR helper module.
 
-```
+```groovy
 #!/usr/bin/env groovy
 
 node {
@@ -137,7 +142,7 @@ node {
 
 - **Modules:** Slack & AWS Route53 DNS helper modules.
 
-```
+```groovy
 #!/usr/bin/env groovy
 
 node {    
@@ -202,7 +207,7 @@ node {
 
 - **Module:** AWS SQS queues helper module.
 
-```
+```groovy
 #!/usr/bin/env groovy
 
 node {
