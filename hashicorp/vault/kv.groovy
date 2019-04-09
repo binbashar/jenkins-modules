@@ -99,6 +99,16 @@ def put(String key, def entriesMap) {
     return false
 }
 
+/**
+ ** Function:
+ * Parse the given JSON encoded string. It uses Jenkins' readJSON utility which is so much better
+ * than Groovy's JSONSluper.
+ *
+ *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
+ *
+ ** Parameters:
+ * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ */
 def parseJson(jsonString) {
     def decodedJson = null
     try {

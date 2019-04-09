@@ -11,7 +11,7 @@
  * This module has to be load as shown in the root context README.md
 */
 
-/*
+/**
  ** Function:
  * This function allocates a new Elastic IP Address and associates with the argument (string) passed: "EC2 id"
  * after its execution it can return the Eip Allocated id, Eip Association Id, the Eip Pubic Address and/or

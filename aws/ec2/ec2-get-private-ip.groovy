@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-/*
+/**
  ** Jenkins Modules:
  * AWS EC2 get ip address.
  *

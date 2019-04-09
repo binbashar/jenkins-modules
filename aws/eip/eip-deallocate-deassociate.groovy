@@ -10,7 +10,7 @@
  * This module has to be load as shown in the root context README.md
 */
 
-/*
+/**
  ** Function: This function deassociates an Elastic IP Address fron an EC2 and deallocates this EIP from AWS EIPs with the
  * arguments (strings) passed: "eipAssoc" & "eipAlloc".
  *

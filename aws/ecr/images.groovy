@@ -12,14 +12,7 @@
  */
 
 /*
- ** Function:
- * Get a list of images that match the given prefix.
- *
- ** Parameters:
- * @param String repositoryName   AWS ECR repository name
- * @param String imagePrefix      AWS ECR docker image prefix
- *
- ** Example:
+** Example:
  *   stage ("Find/remove Image") {
  *       // List all images with matching prefix
  *       String repositoryName = params.repositoryName
@@ -38,7 +31,32 @@
  *   }
  */
 
-/*
+/**
+ ** Function:
+ * Get a list of images that match the given prefix.
+ *
+ ** Parameters:
+ * @param String repositoryName   AWS ECR repository name
+ * @param String imagePrefix      AWS ECR docker image prefix
+ *
+ */
+def getImagesByPrefix(repositoryName, imagePrefix) {
+    def matches = []
+    def images = ecrGetImages(repositoryName)
+    if (images["imageIds"]) {
+        for (img in images["imageIds"]) {
+            if (img["imageTag"].indexOf(imagePrefix) != -1) {
+                matches.add([
+                        "tag": img["imageTag"],
+                        "digest": img["imageDigest"]
+                ])
+            }
+        }
+    }
+    return matches
+}
+
+/**
  ** Function:
  * Delete all images in the given list.
  *
@@ -55,7 +73,7 @@ def deleteImages(String repositoryName, ArrayList imagesList) {
     return ecrDeleteImages(repositoryName, imageIds.join(" "))
 }
 
-/*
+/**
  ** Function:
  *  Delete all images in the given list.
  *
@@ -72,10 +90,11 @@ def ecrDeleteImages(String repositoryName, ArrayList imageIds) {
     return parseJson(out)
 }
 
-/*
+/**
  ** Function:
  *  Get all images in the given AWS ECR repo.
  *
+ ** Parameters:
  * @param repositoryName   AWS ECR repository name
  */
 def ecrGetImages(repositoryName) {
@@ -87,9 +106,12 @@ def ecrGetImages(repositoryName) {
     return parseJson(out)
 }
 
-/*
- ** Function: Parse the given JSON encoded string.
- * https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
+/**
+ ** Function:
+ * Parse the given JSON encoded string. It uses Jenkins' readJSON utility which is so much better
+ * than Groovy's JSONSluper.
+ *
+ *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
  * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.

@@ -28,14 +28,18 @@ node {
 
 ### USE CASE EXAMPLES
 
-- Modules: Slack & AWS SSM Parameter Store helper modules.
+- **Modules:** Slack & AWS SSM Parameter Store helper modules.
 
 ```
 node {
-    gitJenkinsModName = 'jenkins_modules'
-    gitJenkinsModCredentialsId = 'jenkins_id_rsa'
-    gitJenkinsModRepoUrl = 'bitbucket.org-access-keys:project/devops-jenkins-modules.git'
-    gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModRepoUrl = 'bitbucket.org-access-keys:project/devops-jenkins-modules.git'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
+    
+    def slackHelper
+    def parameterStoreHelper
 
     stage("Checkout ${gitJenkinsModName} Repo code") {
         dir("${gitJenkinsModName}") {
@@ -49,10 +53,8 @@ node {
             ])
         }
         
-        def rootDir = pwd()
-        jenkinsModulesPath = "${rootDir}/jenkins_modules"
-        slackHelper = load "${jenkinsModulesPath}/slack/notification.groovy"
-        parameterStoreHelper = load "${jenkinsModulesPath}/aws/ssm/parameter-store.groovy"
+        slackHelper = load "${gitJenkinsModName}/slack/notification.groovy"
+        parameterStoreHelper = load "${gitJenkinsModName}/aws/ssm/parameter-store.groovy"
     }
 
     stage("Call slackHelper module to Notify Start exec"){
@@ -85,18 +87,18 @@ node {
 ```
 
 
-- Module: AWS ECR helper module.
+- **Module:** AWS ECR helper module.
 
 ```
 #!/usr/bin/env groovy
 
 node {
-    gitJenkinsModName = 'jenkins_modules'
-    gitJenkinsModCredentialsId = 'jenkins_id_rsa'
-    gitJenkinsModVersionTag = 'v0.0.1'
-    gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
-    
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
     String jenkinsCredentialId = "jenkins-master-ssh-credentials"
+    
     def ecrHelper
     
     stage ("Check-out Libraries") {
@@ -111,7 +113,7 @@ node {
             ])
         }
         
-        ecrHelper = load "jenkins-modules/aws/ecr/images.groovy"
+        ecrHelper = load "load "${gitJenkinsModName}/aws/ecr/images.groovy"
     }
     
     stage ("Find/remove Image") {
@@ -128,6 +130,121 @@ node {
         } else {
             def deleteResult = ecrHelper.deleteImages(repositoryName, imagesList)
             println deleteResult
+        }
+    }
+}
+```
+
+- **Modules:** Slack & AWS Route53 DNS helper modules.
+
+```
+#!/usr/bin/env groovy
+
+node {    
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
+    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
+    
+    def slackHelper
+    def route53Helper
+    
+    String appName = params.appName
+    String branchName = params.branchName
+    String stackName = params.stackName
+    String baseDomainName = params.baseDomainName
+    
+    stage ("Check-out Libraries") {
+        dir("${gitJenkinsModName}") {
+            checkout([
+                $class: "GitSCM",
+                branches: [[ name: gitJenkinsModVersionTag ]],
+                userRemoteConfigs: [[
+                    credentialsId: jenkinsCredentialId,
+                    url: gitJenkinsModRepoUrl
+                ]]
+            ])
+        }
+                
+        slackHelper = load "${gitJenkinsModName}/slack/notification.groovy"
+        route53Helper = load "${gitJenkinsModName}/aws/route53/hosted-zones.groovy"
+    }
+    
+    stage ("Delete DNS") {
+        String hostedZoneId = "Z3OKADJT40HC77"
+        String domainName = "${stackName}.${baseDomainName}."
+        String aliasHostedZoneId = "Z3ALOTR6KTTL2"
+        String aliasDnsName = "internal-kube-ing-lb-asddjrsbs-12345583.us-east-1.elb.amazonaws.com."
+        
+        // Check if the record set already exists
+        if (route53Helper.hasRecordSet(hostedZoneId, domainName)) {
+            // Delete the record set on route 53
+            def deleteResult = route53Helper.deleteAliasRecordSet(hostedZoneId, domainName, aliasHostedZoneId, aliasDnsName)
+            println deleteResult
+            
+            // Let's give it some time for the record to be deleted
+            sleep 5
+        } else {
+            println "[INFO] Record set does not exist with domainName=${domainName}, hostedZoneId=${hostedZoneId}"
+        }
+    }
+    
+    stage ("Notify") {
+        if (params.enableNotifications) {
+            String msg = ":white_check_mark: Push Button Environments \n"
+            msg += "A DEV environment has been *deleted* for app: `${appName}` using branch: `${branchName}` "
+            slackHelper.send(msg, "#A9D071")
+        }
+    }
+}
+```
+
+- **Module:** AWS SQS queues helper module.
+
+```
+#!/usr/bin/env groovy
+
+node {
+
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
+    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
+    
+    String appName = "wordpress"
+    String envName = "dev"
+    String stackName = "bi"
+    String queueName = "${appName}-${envName}-${stackName}"
+    String awsJenkinsRole = "devstg-jenkins-role"
+    
+    def sqsHelper
+
+    stage ("Check-out Libraries") {
+        dir("${gitJenkinsModName}") {
+            checkout([
+                $class: "GitSCM",
+                branches: [[ name: gitJenkinsModVersionTag ]],
+                userRemoteConfigs: [[
+                    credentialsId: jenkinsCredentialId,
+                    url: gitJenkinsModRepoUrl
+                ]]
+            ])
+        }
+        
+        sqsHelper = load "${gitJenkinsModName}/aws/sqs/queues.groovy"
+    }
+    
+    stage ("Delete Queue") {
+        String queueUrl = sqsHelper.getQueue(queueName, awsJenkinsRole)
+        
+        if (queueUrl) {
+            println "[INFO] Queue was found with queueName=${queueName}, queueUrl=${queueUrl}"
+            def deleteResult = sqsHelper.deleteQueue(queueUrl, awsJenkinsRole)
+            println "[INFO] Delete queue returned with result=${deleteResult}"
+        } else {
+            println "[INFO] Queue was not found with queueName=${queueName}"
         }
     }
 }

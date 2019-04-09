@@ -23,4 +23,5 @@ def call(elb_name) {
     }
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this
