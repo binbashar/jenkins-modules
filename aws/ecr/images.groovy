@@ -1,41 +1,52 @@
 #!/usr/bin/env groovy
 /*
- * Jenkins Modules: AWS ECR helper.
+ ** Jenkins Modules:
+ * AWS ECR helper.
  *
- * Important: this module relies on the AWS CLI to be configured to run as-is
+ ** Important:
+ * This module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
 /*
+ ** Function:
  * Get a list of images that match the given prefix.
  *
- * @param repositoryName   AWS ECR repository name
- * @param imagePrefix      AWS ECR docker image prefix
+ ** Parameters:
+ * @param String repositoryName   AWS ECR repository name
+ * @param String imagePrefix      AWS ECR docker image prefix
+ *
+ ** Example:
+ *   stage ("Find/remove Image") {
+ *       // List all images with matching prefix
+ *       String repositoryName = params.repositoryName
+ *       String imagePrefix = params.imagePrefix
+ *
+ *       imagesList = ecrHelper.getImagesByPrefix(repositoryName, imagePrefix)
+ *
+ *       // Remove any matching images
+ *       println "[INFO] Found " + imagesList.size() + " images to delete"
+ *       if (imagesList.size() == 0) {
+ *           println "[INFO] No images to delete from repository=${repositoryName} with prefix=${imagePrefix}"
+ *       } else {
+ *           def deleteResult = ecrHelper.deleteImages(repositoryName, imagesList)
+ *           println deleteResult
+ *       }
+ *   }
  */
-def getImagesByPrefix(repositoryName, imagePrefix) {
-    def matches = []
-    def images = ecrGetImages(repositoryName)
-    if (images["imageIds"]) {
-        for (img in images["imageIds"]) {
-            if (img["imageTag"].indexOf(imagePrefix) != -1) {
-                matches.add([
-                    "tag": img["imageTag"],
-                    "digest": img["imageDigest"]
-                ])
-            }
-        }
-    }
-    return matches
-}
 
 /*
+ ** Function:
  * Delete all images in the given list.
  *
- * @param repositoryName   AWS ECR repository name
- * @param imagePrefix      AWS ECR image-names list
+ ** Parameters:
+ * @param String      repositoryName    AWS ECR repository name
+ * @param ArrayList   imagesList        AWS ECR image-names list
  */
-def deleteImages(repositoryName, imagesList) {
+def deleteImages(String repositoryName, ArrayList imagesList) {
     def imageIds = []
     for (img in imagesList) {
         imageIds.add("imageTag=" + img["tag"])
@@ -45,13 +56,15 @@ def deleteImages(repositoryName, imagesList) {
 }
 
 /*
- * Delete all images in the given list.
+ ** Function:
+ *  Delete all images in the given list.
  *
- * @param repositoryName   AWS ECR repository name
- * @param imageIds         AWS ECR list of image ID references that correspond to images to delete.
- *                         The format of the imageIds reference is imageTag=tag or imageDigest=digest.
+ ** Parameters:
+ * @param String    repositoryName   AWS ECR repository name
+ * @param ArrayList imageIds         AWS ECR list of image ID references that correspond to images to delete.
+ *                                   The format of the imageIds reference is imageTag=tag or imageDigest=digest.
  */
-def ecrDeleteImages(repositoryName, imageIds) {
+def ecrDeleteImages(String repositoryName, ArrayList imageIds) {
     String cmd = "aws ecr batch-delete-image" +
         " --repository ${repositoryName}" +
         " --image-ids ${imageIds}"
@@ -60,7 +73,8 @@ def ecrDeleteImages(repositoryName, imageIds) {
 }
 
 /*
- * Get all images in the given AWS ECR repo.
+ ** Function:
+ *  Get all images in the given AWS ECR repo.
  *
  * @param repositoryName   AWS ECR repository name
  */
@@ -74,7 +88,11 @@ def ecrGetImages(repositoryName) {
 }
 
 /*
- * Parse the given JSON encoded string.
+ ** Function: Parse the given JSON encoded string.
+ * https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
+ *
+ ** Parameters:
+ * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  */
 def parseJson(jsonString) {
     def decodedJson = null
