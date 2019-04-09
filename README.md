@@ -1,5 +1,11 @@
+<div align="center">
+    <img src="figures/binbash.png" alt="drawing" width="350"/>
+</div>
+<div align="right">
+  <img src="figures/binbash-leverage-jenkins.png" alt="leverage" width="230"/>
+</div>
+
 # DevOps Jenkins Modules
-<img src="figures/jenkins.png" alt="drawing" width="200"/>
 
 ### Devops Groovy Module files import
 - Orig Ref @ https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/load-from-file/pipeline.groovy
@@ -20,25 +26,29 @@ node {
 ```
 
 
-### USE CASE EXAMPLE
+### USE CASE EXAMPLES
+
+- Modules: Slack & AWS SSM Parameter Store helper modules.
 
 ```
 node {
     gitJenkinsModName = 'jenkins_modules'
     gitJenkinsModCredentialsId = 'jenkins_id_rsa'
     gitJenkinsModRepoUrl = 'bitbucket.org-access-keys:project/devops-jenkins-modules.git'
-    gitJenkinsModBranch = 'master'
     gitJenkinsModVersionTag = 'v0.0.1'
 
     stage("Checkout ${gitJenkinsModName} Repo code") {
         dir("${gitJenkinsModName}") {
-            git branch: gitJenkinsModBranch,
-                    credentialsId: gitJenkinsModCredentialsId,
+            checkout([
+                $class: "GitSCM",
+                branches: [[ name: gitJenkinsModVersionTag ]],
+                userRemoteConfigs: [[
+                    credentialsId: jenkinsCredentialId,
                     url: gitJenkinsModRepoUrl
-
-            sh "git checkout tags/${gitJenkinsModVersionTag}"
+                ]]
+            ])
         }
-
+        
         def rootDir = pwd()
         jenkinsModulesPath = "${rootDir}/jenkins_modules"
         slackHelper = load "${jenkinsModulesPath}/slack/notification.groovy"
@@ -70,6 +80,55 @@ node {
 
     stage("Call slackHelper module to Notify Successful exec"){
         slackHelper.sendBuildStatus('SUCCESS')
+    }
+}
+```
+
+
+- Module: AWS ECR helper module.
+
+```
+#!/usr/bin/env groovy
+
+node {
+    gitJenkinsModName = 'jenkins_modules'
+    gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    gitJenkinsModVersionTag = 'v0.0.1'
+    gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
+    
+    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
+    def ecrHelper
+    
+    stage ("Check-out Libraries") {
+        dir("${gitJenkinsModName}") {
+            checkout([
+                $class: "GitSCM",
+                branches: [[ name: gitJenkinsModVersionTag ]],
+                userRemoteConfigs: [[
+                    credentialsId: jenkinsCredentialId,
+                    url: gitJenkinsModRepoUrl
+                ]]
+            ])
+        }
+        
+        ecrHelper = load "jenkins-modules/aws/ecr/images.groovy"
+    }
+    
+    stage ("Find/remove Image") {
+        // List all images with matching prefix
+        String repositoryName = params.repositoryName
+        String imagePrefix = params.imagePrefix
+        
+        imagesList = ecrHelper.getImagesByPrefix(repositoryName, imagePrefix)
+        
+        // Remove any matching images
+        println "[INFO] Found " + imagesList.size() + " images to delete"
+        if (imagesList.size() == 0) {
+            println "[INFO] No images to delete from repository=${repositoryName} with prefix=${imagePrefix}"
+        } else {
+            def deleteResult = ecrHelper.deleteImages(repositoryName, imagesList)
+            println deleteResult
+        }
     }
 }
 ```
