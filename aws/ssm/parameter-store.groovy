@@ -81,6 +81,7 @@ def getParameters(String paramPrefix, paramTypesList = []) {
  ** Function:
  * Get parameter name without prefix.
  *
+ ** Paramaters:
  * @param String paramPrefix    AWS SSM parameter prefix, eg: '/app/env/'
  * @param String rawName        Parameter value without prefix.
  */
@@ -156,9 +157,15 @@ def ssmGetParameters(String names, boolean decryptValue = false) {
  ** Function:
  * Return a list of parameter names that match the given type and prefix.
  *
- ** Important: it was only tested with values of type String and SecureString.
+ ** Important:
+ * It was only tested with values of type String and SecureString.
  *
- **
+ ** Parameters:
+ * @param String    paramPrefix     AWS SSM parameter prefix, eg: '/app/env/'
+ * @param String    paramType       The type of parameter that you want to add to the system.
+ *                                  Possible supported values:
+ *                                  - String
+ *                                  - SecureString
  */
 def getParameterNames(String paramPrefix, String paramType) {
     def paramsList = []
@@ -175,11 +182,43 @@ def getParameterNames(String paramPrefix, String paramType) {
         }
     }
 
+    // Returns an ArrayList with the AWS SSM parameters name (not it's value)
     return paramsList
 }
 
-/*
+/**
+ ** Function:
  * Retrieve a list of parameter names that match the given type and prefix.
+ *
+ ** Important:
+ * This function relies on AWS CLI
+ * Command:
+ * aws ssm describe-parameters
+ * Output:
+ *
+ * {
+ *   "Parameters": [
+ *       {
+ *           "LastModifiedUser": "arn:aws:iam::809632081692:user/admin",
+ *           "LastModifiedDate": 1487880325.324,
+ *           "Type": "String",
+ *           "Name": "welcome"
+ *       }
+ *   ]
+ * }
+ *
+ * To list all Parameters matching specific metadata
+ * This example lists all parameters matching a filter.
+ * Command:
+ * aws ssm describe-parameters --filters "Key=Name,Values=helloWorld"
+ *
+ ** Parameters:
+ * @param String    paramPrefix     AWS SSM parameter prefix, eg: '/app/env/'
+ * @param String    paramType      The type of parameter that you want to add to the system.
+ *                                  Possible supported values:
+ *                                  - String
+ *                                  - SecureString
+ *
  */
 def ssmDescribeParameter(String paramPrefix, String paramType) {
     String ssmCmd = "aws ssm describe-parameters" +
