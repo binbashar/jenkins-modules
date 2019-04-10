@@ -41,7 +41,6 @@ node {
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
     String gitJenkinsModRepoUrl = 'bitbucket.org-access-keys:project/devops-jenkins-modules.git'
     String gitJenkinsModVersionTag = 'v0.0.1'
-    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
     
     def slackHelper
     def parameterStoreHelper
@@ -52,7 +51,7 @@ node {
                 $class: "GitSCM",
                 branches: [[ name: gitJenkinsModVersionTag ]],
                 userRemoteConfigs: [[
-                    credentialsId: jenkinsCredentialId,
+                    credentialsId: gitJenkinsModCredentialsId,
                     url: gitJenkinsModRepoUrl
                 ]]
             ])
@@ -69,19 +68,19 @@ node {
 
     stage ("Get Vault Unseal Keys") {
         def allParams = parameterStoreHelper.getParameters("/devops/vault/")
-        // https://jenkins.io/doc/pipeline/steps/credentials-binding/
-        withCredentials([string(credentialsId: "jenkins-vault-unseal-fake-credentials", variable: "jenkinsVaultUnsealFakeCredentials")]) {
+        withCredentials([string(credentialsId: "jenkins-vault-unseal-fake-credentials", 
+                variable: "jenkinsVaultUnsealFakeCredentials")]) {
             sh """
-                    set +x
-                    export VAULT_ADDR='http://0.0.0.0:8200'
-                    vault operator unseal ${allParams['unseal_key_1']}
-                    vault operator unseal ${allParams['unseal_key_2']}
-                    vault operator unseal ${allParams['unseal_key_3']}
-
-                    # This next line is only to force Jenkins to hide all commands,
-                    # their outputs should be covered by the +x
-                    #echo ${jenkinsVaultUnsealFakeCredentials} > /dev/null
-                """
+                set +x
+                export VAULT_ADDR='http://0.0.0.0:8200'
+                vault operator unseal ${allParams['unseal_key_1']}
+                vault operator unseal ${allParams['unseal_key_2']}
+                vault operator unseal ${allParams['unseal_key_3']}
+               
+                # This next line is only to force Jenkins to hide all commands,
+                # their outputs should be covered by the +x
+                #echo ${jenkinsVaultUnsealFakeCredentials} > /dev/null
+            """
         }
     }
 
@@ -102,7 +101,6 @@ node {
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
     String gitJenkinsModVersionTag = 'v0.0.1'
     String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
-    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
     
     def ecrHelper
     
@@ -112,7 +110,7 @@ node {
                 $class: "GitSCM",
                 branches: [[ name: gitJenkinsModVersionTag ]],
                 userRemoteConfigs: [[
-                    credentialsId: jenkinsCredentialId,
+                    credentialsId: gitJenkinsModCredentialsId,
                     url: gitJenkinsModRepoUrl
                 ]]
             ])
@@ -150,7 +148,6 @@ node {
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
     String gitJenkinsModVersionTag = 'v0.0.1'
     String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
-    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
     
     def slackHelper
     def route53Helper
@@ -166,7 +163,7 @@ node {
                 $class: "GitSCM",
                 branches: [[ name: gitJenkinsModVersionTag ]],
                 userRemoteConfigs: [[
-                    credentialsId: jenkinsCredentialId,
+                    credentialsId: gitJenkinsModCredentialsId,
                     url: gitJenkinsModRepoUrl
                 ]]
             ])
@@ -216,7 +213,6 @@ node {
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
     String gitJenkinsModVersionTag = 'v0.0.1'
     String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
-    String jenkinsCredentialId = "jenkins-master-ssh-credentials"
     
     String appName = "wordpress"
     String envName = "dev"
@@ -232,7 +228,7 @@ node {
                 $class: "GitSCM",
                 branches: [[ name: gitJenkinsModVersionTag ]],
                 userRemoteConfigs: [[
-                    credentialsId: jenkinsCredentialId,
+                    credentialsId: gitJenkinsModCredentialsId,
                     url: gitJenkinsModRepoUrl
                 ]]
             ])

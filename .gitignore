@@ -53,6 +53,7 @@ Thumbs.db
 *.ipr
 .vscode
 /src
+/venv
 
 # Custom Project files #
 ########################

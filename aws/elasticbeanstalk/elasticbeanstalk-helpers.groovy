@@ -10,9 +10,6 @@ import groovy.json.JsonSlurper
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that. The module also uses 'jq' to parse JSON output.
  *
- * At this moment this module can only handle values of type String
- * and SecureString.
- *
  * This module has to be load as shown in the root context README.md
  *
  */
