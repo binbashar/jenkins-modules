@@ -70,7 +70,7 @@ def deleteImages(String repositoryName, ArrayList imagesList) {
         imageIds.add("imageTag=" + img["tag"])
     }
     println imageIds
-    return ecrDeleteImages(repositoryName, imageIds.join(" "))
+    return ecrDeleteImages(repositoryName, imageIds.join(" ") as ArrayList)
 }
 
 /**
@@ -114,9 +114,9 @@ def ecrGetImages(repositoryName) {
  *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
- * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  */
-def parseJson(jsonString) {
+def parseJson(String jsonString) {
     def decodedJson = null
     try {
         decodedJson = readJSON text: jsonString

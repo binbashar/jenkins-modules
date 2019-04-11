@@ -33,6 +33,10 @@
  *
  *   EIP_DEASSOC_DEALLOC = load "jenkins_pipeline-aws_eip_deallocate_deassociate.groovy"
  *   EIP_DEASSOC_DEALLOC.call("eipalloc-d31335e6,eipassoc-bf12d089")
+ *
+ *   // or
+ *   // We can just run it with "externalCall(...)" since it has a call method.
+ *   EIP_DEASSOC_DEALLOC("eipalloc-d31335e6,eipassoc-bf12d089")
  */
 
 def call(String eipAssoc, String eipAlloc) {

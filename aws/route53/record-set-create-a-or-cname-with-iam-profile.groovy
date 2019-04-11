@@ -63,6 +63,8 @@ def call(String jenkinsModulesPath, String dnsRecordSetComment, String dnsRecord
                 ", awsRegion=${awsRegion}" +
                 ", dnsRecordSetName=${dnsRecordSetName}" +
                 ", dnsRecordSetValue=${dnsRecordSetValue}"
+
+        echo "[ERROR] Exception: ${e}"
     }
 }
 

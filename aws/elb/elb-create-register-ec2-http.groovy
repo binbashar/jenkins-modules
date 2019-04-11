@@ -38,9 +38,14 @@
  *
  *  B) Sample usage as a loaded groovy script
  *
- *   ELB_CREATE_REGISTER = load "jenkins_pipeline-aws_elb_create_register_ec2_http.groovy"
- *   ELB_CREATE_REGISTER.call(subnet-20eal90c,nubi-infra-jenkins-public,sg-2b166e5e,i-0c071000c63b1200d)
- *   print "elb_dns: " + ELB_CREATE_REGISTER.returnElbDns()
+ *   elbCreateRegister = load "jenkins_pipeline-aws_elbCreateRegister_ec2_http.groovy"
+ *   elbCreateRegister.call(subnet-20eal90c,nubi-infra-jenkins-public,sg-2b166e5e,i-0c071000c63b1200d)
+ *
+ *   // or
+ *   // We can just run it with "externalCall(...)" since it has a call method.
+ *   elbCreateRegister(subnet-20eal90c,nubi-infra-jenkins-public,sg-2b166e5e,i-0c071000c63b1200d)
+ *
+ *   print "elb_dns: " + elbCreateRegister.returnElbDns()
  */
 def call(String subnet_id, String load_balancer_name, String sg_id, String ec2_id) {
 

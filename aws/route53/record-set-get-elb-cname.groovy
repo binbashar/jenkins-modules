@@ -20,6 +20,7 @@ def call(elb_name) {
 
     } catch (Exception e) {
         echo "[ERROR] Error while running elb describe with name=${elb_name}"
+        echo "[ERROR] Exception: ${e}"
     }
 }
 

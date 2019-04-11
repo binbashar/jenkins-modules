@@ -1,4 +1,6 @@
 #!/usr/bin/env groovy
+import groovy.json.JsonSlurper
+
 /*
  ** Jenkins Modules:
  * AWS SSM Parameter Store helper.
@@ -53,8 +55,34 @@
  *            """
  *     }
  *  }
+ *
+ *  C) getParameters function + /jenkins-modules/-util/file-format.groovy to create a parameters-base.yml file
+ *  stage ('Build Parameters File') {
+ *      // Fetch all parameters names/values of this app/env from SSM
+ *     def allParams = parameterStoreHelper.getParameters('/wordpress/prod/')
+ *
+ *     // Format all parameters accordingly
+ *     String paramsFileData = "parameters: \n"
+ *     paramsFileData += fileFormatHelper.mapToYaml(allParams)
+ *
+ *     // And save it to a temporary file on the workspace
+ *     writeFile file: "${WORKSPACE}/parameters-base.yml", text: "${paramsFileData}"
+ * }
+ *
+ *  D) getParameters function for K8s business-intelligence cronjobs and as post-step replace placeholders in ${cronJob}
+ *    file with sed command.
+ *  stage ('Retrieve Parameters') {
+ *     String paramPrefix = "/k8s/cronjobs/bi/"
+ *     cronJobConfigParams = parameterStoreHelper.getParameters(paramPrefix)
+ *     println "Found " + cronJobConfigParams.size() + " config parameters"
+ *
+ *     // Replace all placeholders with values retrieved from param store
+ *     cronJobConfigParams.each { paramName, paramValue ->
+ *         sh "sed -i \"s/{${paramName}}/${paramValue}/\" ${cronJob}"
+ *    }
+ *  }
  */
-def getParameters(String paramPrefix, paramTypesList = []) {
+def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
     def allParams = [:]
 
     // By default, we'll process String & SecureString if none is provided
@@ -65,10 +93,10 @@ def getParameters(String paramPrefix, paramTypesList = []) {
 
     // Go through every param type
     for (paramType in paramTypesList) {
-        def paramNames = getParameterNames(paramPrefix, paramType)
-        def paramValues = getParameterValues(paramNames, true)
+        def paramNames = getParameterNames(paramPrefix, paramType as String)
+        def paramValues = getParameterValues(paramNames as ArrayList, true)
         for (paramVal in paramValues) {
-            String name = stripParameterPrefix(paramPrefix, paramVal.key)
+            String name = stripParameterPrefix(paramPrefix, paramVal.key as String)
             allParams[name] = paramVal.value
         }
     }
@@ -81,11 +109,16 @@ def getParameters(String paramPrefix, paramTypesList = []) {
  ** Function:
  * Get parameter name without prefix.
  *
+ * NOTE: static def functionName
+ * Methods which may safely be made static . A method may be static if it is not  synchronized, it does not reference
+ * any of its class' non static methods and non static fields and is not overridden
+ * in a sub class.
+ *
  ** Paramaters:
  * @param String paramPrefix    AWS SSM parameter prefix, eg: '/app/env/'
  * @param String rawName        Parameter value without prefix.
  */
-def stripParameterPrefix(String paramPrefix, String rawName) {
+static def stripParameterPrefix(String paramPrefix, String rawName) {
     return rawName.replaceAll(paramPrefix, '')
 }
 
@@ -214,7 +247,7 @@ def getParameterNames(String paramPrefix, String paramType) {
  *
  ** Parameters:
  * @param String    paramPrefix     AWS SSM parameter prefix, eg: '/app/env/'
- * @param String    paramType      The type of parameter that you want to add to the system.
+ * @param String    paramType       The type of parameter that you want to add to the system.
  *                                  Possible supported values:
  *                                  - String
  *                                  - SecureString
@@ -231,10 +264,19 @@ def ssmDescribeParameter(String paramPrefix, String paramType) {
     return cmdOutput
 }
 
-/*
- * Helper used to join a list of strings.
+/**
+ ** Function:
+ * Helper used to join a list of strings from an ArrayList.
+ *
+ * NOTE: static def functionName
+ * Methods which may safely be made static . A method may be static if it is not  synchronized, it does not reference
+ * any of its class' non static methods and non static fields and is not overridden
+ * in a sub class.
+ *
+ ** Paramaters:
+ * @param ArrayList params  List of parameters
  */
-def joinParams(ArrayList params) {
+static def joinParams(ArrayList params) {
     String names = ""
     for (param in params) {
         names += "\"${param}\" "
@@ -242,11 +284,22 @@ def joinParams(ArrayList params) {
     return names
 }
 
-/*
- * Slice the given Groovy list by the given slice size. It returns a list of
- * of slices.
+/**
+ ** Function:
+ * Slice the given Groovy list by the given slice size. It returns a list of of slices.
+ *
+ * NOTE: static def functionName
+ * Methods which may safely be made static . A method may be static if it is not  synchronized, it does not reference
+ * any of its class' non static methods and non static fields and is not overridden
+ * in a sub class.
+ *
+ ** Parameters:
+ * @param ArrayList list        Groovy ArrayList for our use case it will contain the AWS SSM parameters names
+ * @param int       sliceSize   Integer to slite the ArrayList considering our use-case where ssm get-parameters only
+ *                              processes up to 10 items per call
+ *
  */
-def sliceList(ArrayList list, int sliceSize) {
+static def sliceList(ArrayList list, int sliceSize) {
     def listOfSlices = []
 
     def slice = []
@@ -276,11 +329,11 @@ def sliceList(ArrayList list, int sliceSize) {
  * Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
- * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  */
-def parseJson(jsonString) {
+def parseJson(String jsonString) {
     def decodedJson = null
-    def jsonParser = new groovy.json.JsonSlurper()
+    def jsonParser = new JsonSlurper()
     try {
         decodedJson = jsonParser.parseText(jsonString)
     } catch (ex) {

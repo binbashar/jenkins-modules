@@ -10,8 +10,20 @@
  * This module handle AWS IAM profile credentials.
  *
  * This module has to be load as shown in the root context README.md
+ *
+ ** Examples:
+ * stage ("Delete Queue") {
+ *       String queueUrl = sqsHelper.getQueue(queueName, awsJenkinsRole)
+ *
+ *      if (queueUrl) {
+ *           println "[INFO] Queue was found with queueName=${queueName}, queueUrl=${queueUrl}"
+ *          def deleteResult = sqsHelper.deleteQueue(queueUrl, awsJenkinsRole)
+ *           println "[INFO] Delete queue returned with result=${deleteResult}"
+ *       } else {
+ *           println "[INFO] Queue was not found with queueName=${queueName}"
+ *       }
+ *   }
  */
-
 
 /**
  ** Function:
@@ -155,9 +167,9 @@ def ecrDeleteQueue(String queueUrl, String profile = null) {
  *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
- * @param jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  */
-def parseJson(jsonString) {
+def parseJson(String jsonString) {
     def decodedJson = null
     if (jsonString) {
         try {

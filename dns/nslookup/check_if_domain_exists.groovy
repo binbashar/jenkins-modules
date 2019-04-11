@@ -1,11 +1,26 @@
 #!/usr/bin/env groovy
 /**
- * Check if domain name resolves to a valid record entry.
- *
- * @param dns_record_set_name   Domain name
+ ** Jenkins Modules:
+ * Module to validate if a DNS record currently exists
+ * 
+ ** Important:
+ * This module handle AWS IAM profile credentials.
+ 
  */
 
-def call(dns_record_set_name) {
+/** 
+ ** Function:
+ * Check if domain name resolves to a valid DNS record entry.
+ *
+ ** Parameters:
+ * @param String dns_record_set_name   Domain name
+ * 
+ ** Examples:
+ *    // We can just run it with "externalCall(...)" since it has a call method.
+ *    boolean dnsDomainExists = dnsNslookupHelper(dns_record_set_comment)
+ */
+
+def call(String dns_record_set_name) {
     String lookup_result = ""
 
     try {
@@ -18,6 +33,7 @@ def call(dns_record_set_name) {
 
     } catch (Exception e) {
         echo "[ERROR] Error while running nslookup with domain=${dns_record_set_name}"
+        echo "[ERROR] Exception=${e}"
     }
 
     // Since the grep expression expects to find the negative case, we test for
@@ -28,4 +44,5 @@ def call(dns_record_set_name) {
     return false
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

@@ -31,6 +31,10 @@
  *
  *   ec2PrivIpAddr = load "jenkins_pipeline-aws_ec2_get_private_ip.groovy"
  *   print "EC2 private IP addr" + ec2PrivIpAddr.call(i-0c071000c63b1200d)
+ *
+ *   // or
+ *   // We can just run it with "externalCall(...)" since it has a call method.
+ *   print "EC2 private IP addr" + ec2PrivIpAddr(i-0c071000c63b1200d)
  */
 
 def call(String ec2_id) {

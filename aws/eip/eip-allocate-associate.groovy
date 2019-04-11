@@ -39,6 +39,11 @@
  *
  *   EIP_ASSOC_ALLOC = load "jenkins_pipeline-aws_eip_allocate_associate.groovy"
  *   EIP_ASSOC_ALLOC.call("i-0c0743312321b1200d")
+ *
+ *   // or
+ *   // We can just run it with "externalCall(...)" since it has a call method.
+ *   EIP_ASSOC_ALLOC("i-0c0743312321b1200d")
+ *
  *   print "eipAllocId: " + EIP_ASSOC_ALLOC.returnEipAllocId()
  *   print "eipAssocId: " + EIP_ASSOC_ALLOC.returnEipAssocId()
  *   print "eipAddr: " + EIP_ASSOC_ALLOC.returnEipAddr()

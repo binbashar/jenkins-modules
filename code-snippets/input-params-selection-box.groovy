@@ -1,7 +1,3 @@
-/**
- *  Created by Exequiel Barrirero & Marcos Pagnucco on 03/02/17.
- */
-
 def appRepo() {
 
     try {

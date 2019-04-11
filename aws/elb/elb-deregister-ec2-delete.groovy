@@ -32,8 +32,12 @@
  *
  *  B) Sample usage as a loaded groovy script
  *
- *   ELB_DELETE_DEREGISTER = load "jenkins_pipeline-aws_elb_deregister_ec2_delete.groovy"
- *   ELB_DELETE_DEREGISTER.call(nubi-infra-jenkins-public,i-0c071000c63b1200d)
+ *   elbDeleteRegister = load "jenkins_pipeline-aws_elb_deregister_ec2_delete.groovy"
+ *   elbDeleteRegister.call(nubi-infra-jenkins-public,i-0c071000c63b1200d)
+ *
+ *   // or
+ *   // We can just run it with "externalCall(...)" since it has a call method.
+ *   elbDeleteRegister(nubi-infra-jenkins-public,i-0c071000c63b1200d)
  */
 def call(String load_balancer_name, String ec2_id) {
 
