@@ -2,7 +2,7 @@
 /*
  * Jenkins Modules: docker-machine Passbolt CLI user creation.
  *
- * Important: this module relies docker and docker-machine installed in the current jenkins server to be configured to
+ * IMPORTANT: this module relies docker and docker-machine installed in the current jenkins server to be configured to
  * run as-is, this module does not handle that.
  */
 

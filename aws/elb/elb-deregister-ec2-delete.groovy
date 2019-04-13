@@ -2,7 +2,7 @@
 /*
  ** Jenkins Modules: AWS EC2 deregistration from ELB and post ELB deletion.
  *
- ** Important: this module relies on the AWS CLI to be configured to run as-is
+ ** IMPORTANT: this module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
  *

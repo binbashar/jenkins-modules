@@ -3,7 +3,7 @@
 /**
  * Jenkins Modules: git utilities.
  *
- * Important: most of these functions work on the current directory and will
+ * IMPORTANT: most of these functions work on the current directory and will
  *  work based on the assumption that there is a git local repository set up.
  */
 

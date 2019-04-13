@@ -5,7 +5,7 @@ import groovy.json.JsonSlurper
  * AWS Elasticbeanstalk helper.
  * ref link: https://aws.amazon.com/getting-started/tutorials/deploy-app-command-line-elastic-beanstalk/
  *
- ** Important:
+ ** IMPORTANT:
  * this module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that. The module also uses 'jq' to parse JSON output.

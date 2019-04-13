@@ -2,7 +2,7 @@
 /**
  * Jenkins Modules: Get the public record of the given ELB name.
  *
- * Important: this module relies on the AWS CLI to be configured to run without
+ * IMPORTANT: this module relies on the AWS CLI to be configured to run without
  * any initial or additional setup. This module DOES NOT handle AWS credentials.
  *
  * @param elb_name ELB name

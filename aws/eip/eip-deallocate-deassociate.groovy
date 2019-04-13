@@ -3,7 +3,7 @@
  ** Jenkins Modules:
  * AWS deallocate EIP ans deassociate from EC2.
  *
- ** Important: this module relies on the AWS CLI to be configured to run as-is
+ ** IMPORTANT: this module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
  *

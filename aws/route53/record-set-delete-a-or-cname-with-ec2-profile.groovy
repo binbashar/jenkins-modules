@@ -4,7 +4,7 @@
  *
  * This module handle EC2 profile AWS credentials
  *
- * Important
+ * IMPORTANT
  * pre-reqs: this module relies on GNU/Linux pkgs libssl-dev, python-dev, python-pip, python2.7
  * and py libraries fabric <= 1.14.1, boto3, pyOpenSSL, decorator to be configured to run without
  * any initial or additional setup.

@@ -3,7 +3,7 @@
  ** Jenkins Modules:
  * AWS Ansible Cloudformation helper.
  *
- ** Important:
+ ** IMPORTANT:
  * This module relies on Ansible Jenkins Plugin, plus the ansible installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
  *

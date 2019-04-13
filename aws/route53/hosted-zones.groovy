@@ -3,7 +3,7 @@
  ** Jenkins Modules:
  * AWS Route53 Hosted Zones helper.
  *
- ** Important:
+ ** IMPORTANT:
  * This module relies on the AWS CLI to be configured to run without
  * any initial or additional setup. This module DOES NOT handle AWS credentials.
  *

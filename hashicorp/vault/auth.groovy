@@ -1,21 +1,59 @@
 #! /usr/bin/groovy
+import groovy.json.JsonSlurper
 /*
- * Jenkins Modules: Vault Auth helper.
+ ** Jenkins Modules:
+ * Hashicorp Vault Auth helper.
+ * Vault Auth Method - An auth method is used to authenticate users or applications which are connecting to Vault.
+ * Once authenticated, the auth method returns the list of applicable policies which should be applied.
+ * Vault takes an authenticated user and returns a client token that can be used for future requests.
+ * As an example, the userpass auth method uses a username and password to authenticate the user.
+ * Alternatively, the github auth method allows users to authenticate via GitHub.
  *
- * IMPORTANT: this module relies heavily on the vault CLI to run.
+ ** IMPORTANT:
+ * This module relies heavily on the vault CLI to run.
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
 /*
  * This variable needs to be set once if your vault address is different.
  * This is a workaround to avoid having to pass this to every function.
+ * It will be automatically exported as OS ENV var via getExportVaultAddress() function
+ * declared at the end of this module.
  */
 String vaultAddress = 'https://127.0.0.1:8200'
 
-/*
- * Log in to vault with the given token.
+/**
+ ** Function:
+ * Log in to Hashicorp vault with the given token.
  *
  * IMPORTANT: only Github auth is supported, so your Github Personal Access
  * Token should be passed to this.
+ *
+ ** Parameters:
+ * @param String token      Github Personal Access Token. Client Token - A client token (aka "Vault Token") is a
+ *                          conceptually similar to a session cookie on a web site. Once a user authenticates,
+ *                          Vault returns a client token which is used for future requests. The token is used by Vault
+ *                          to verify the identity of the client and to enforce the applicable ACL policies.
+ *                          This token is passed via HTTP headers.
+ *                          ref-link: (https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)
+ *
+ ** Example:
+ *  // Set vault address for subsequent method calls
+ *  vaultAuth.vaultAddress = vaultAddress
+ *
+ *  if (!vaultAuth.isLoggedIn()) {
+ *      withCredentials([string(credentialsId: "jenkins-github-personal-access-token", variable: "jenkinsGithubToken")]) {
+ *          if (vaultAuth.login(jenkinsGithubToken)) {
+ *              println "[INFO] Successfully logged in to Vault"
+ *          } else {
+ *              println "[ERROR] Unable to log in to Vault"
+ *              sh "exit 1"
+ *          }
+ *      }
+ *  } else {
+ *      println "[INFO] Already logged in to Vault"
+ *  }
  */
 def login(String token) {
     try {
@@ -27,6 +65,7 @@ def login(String token) {
         String out = sh(returnStdout: true, script: cmd).trim()
         def jsonOut = parseJson(out)
         
+        // Validate if vault login method has successfully authenticated
         if (jsonOut.auth && jsonOut.auth.client_token)
             return true
         
@@ -39,7 +78,25 @@ def login(String token) {
 }
 
 /*
- * Check if you are already logged in -- which means your token is still valid.
+ ** Function:
+ * Check if you are already logged in -- which means your token is still valid (currently Github token).
+ *
+ ** Example:
+ *  // Set vault address for subsequent method calls
+ *  vaultAuth.vaultAddress = vaultAddress
+ *
+ *  if (!vaultAuth.isLoggedIn()) {
+ *      withCredentials([string(credentialsId: "jenkins-github-personal-access-token", variable: "jenkinsGithubToken")]) {
+ *          if (vaultAuth.login(jenkinsGithubToken)) {
+ *              println "[INFO] Successfully logged in to Vault"
+ *          } else {
+ *              println "[ERROR] Unable to log in to Vault"
+ *              sh "exit 1"
+ *          }
+ *      }
+ *  } else {
+ *      println "[INFO] Already logged in to Vault"
+ *  }
  */
 def isLoggedIn() {
     try {
@@ -50,12 +107,13 @@ def isLoggedIn() {
         """
         String out = sh(returnStdout: true, script: cmd).trim()
         def jsonOut = parseJson(out)
-        
+
+        // Validate if vault login method has successfully authenticated
         if (jsonOut.data && jsonOut.data.id)
             return true
         
     } catch (ex) {
-        // Vault CLI will return an exit code of 2 when an token is not found in
+        // Vault CLI will return an exit code of 2 when a token is not found in
         // current context; that is expected, no need to show errors for that
         if (ex.toString().indexOf("exit code 2") != -1) {
             return false
@@ -82,13 +140,19 @@ def parseJson(String jsonString) {
     def decodedJson = null
     try {
         // Using JsonSlurper here because 'readJson' outputs the string being parsed
-        decodedJson = new groovy.json.JsonSlurper().parseText(jsonString)
+        decodedJson = new JsonSlurper().parseText(jsonString)
     } catch (ex) {
         println "[ERROR] Unable to parse JSON using jsonString=${jsonString}"
         println ex
     }
     return decodedJson
 }
+
+/*
+ ** Function:
+ * Will export String vaultAddress = 'https://127.0.0.1:8200' variable. Since this var needs to be set once if your
+ * vault address is different. This is a workaround to avoid having to pass this to every function.
+ */
 
 def getExportVaultAddress() {
     return "export VAULT_ADDR=${vaultAddress}"

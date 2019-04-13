@@ -3,7 +3,7 @@
  ** Jenkins Modules:
  * AWS ELB creation and post EC2 registration to it.
  *
- ** Important:
+ ** IMPORTANT:
  * This module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.

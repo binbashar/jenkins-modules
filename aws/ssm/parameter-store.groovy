@@ -5,7 +5,7 @@ import groovy.json.JsonSlurper
  ** Jenkins Modules:
  * AWS SSM Parameter Store helper.
  *
- ** Important:
+ ** IMPORTANT:
  * This module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that. The module also uses 'jq' to parse JSON output.
@@ -73,7 +73,7 @@ import groovy.json.JsonSlurper
  *    file with sed command.
  *  stage ('Retrieve Parameters') {
  *     String paramPrefix = "/k8s/cronjobs/bi/"
- *     cronJobConfigParams = parameterStoreHelper.getParameters(paramPrefix)
+ *     def cronJobConfigParams = parameterStoreHelper.getParameters(paramPrefix)
  *     println "Found " + cronJobConfigParams.size() + " config parameters"
  *
  *     // Replace all placeholders with values retrieved from param store
@@ -101,7 +101,7 @@ def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
         }
     }
 
-    // It returns an ArrayList with al the parameters
+    // It returns a Map [:] with al the parameters
     return allParams
 }
 
@@ -114,7 +114,7 @@ def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
  * any of its class' non static methods and non static fields and is not overridden
  * in a sub class.
  *
- ** Paramaters:
+ ** Parameters:
  * @param String paramPrefix    AWS SSM parameter prefix, eg: '/app/env/'
  * @param String rawName        Parameter value without prefix.
  */
@@ -190,7 +190,7 @@ def ssmGetParameters(String names, boolean decryptValue = false) {
  ** Function:
  * Return a list of parameter names that match the given type and prefix.
  *
- ** Important:
+ ** IMPORTANT:
  * It was only tested with values of type String and SecureString.
  *
  ** Parameters:
@@ -223,7 +223,7 @@ def getParameterNames(String paramPrefix, String paramType) {
  ** Function:
  * Retrieve a list of parameter names that match the given type and prefix.
  *
- ** Important:
+ ** IMPORTANT:
  * This function relies on AWS CLI
  * Command:
  * aws ssm describe-parameters
@@ -273,7 +273,7 @@ def ssmDescribeParameter(String paramPrefix, String paramType) {
  * any of its class' non static methods and non static fields and is not overridden
  * in a sub class.
  *
- ** Paramaters:
+ ** Parameters:
  * @param ArrayList params  List of parameters
  */
 static def joinParams(ArrayList params) {

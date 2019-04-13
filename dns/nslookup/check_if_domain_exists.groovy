@@ -3,9 +3,10 @@
  ** Jenkins Modules:
  * Module to validate if a DNS record currently exists
  * 
- ** Important:
+ ** IMPORTANT:
  * This module handle AWS IAM profile credentials.
- 
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
 /** 
