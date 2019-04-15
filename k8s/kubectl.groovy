@@ -2,7 +2,7 @@
 /*
  * Kubernetes Modules: kubectl basic wrapper.
  *
- * Important: this module relies on the `kubectl` CLI to be properly configured
+ * IMPORTANT: this module relies on the `kubectl` CLI to be properly configured
  * and ready to use.
  *
  * Dev Notes: the main point of this module is to help reduce code repetition
@@ -76,7 +76,7 @@ def setContext(context) {
 /*
  * Wait for pod to match the provided target status. The waiting will be bounded
  * to a default timeout that can optionally be specified.
- * Important: an exception will be thrown if the timeout is exceeded.
+ * IMPORTANT: an exception will be thrown if the timeout is exceeded.
  */
 def waitForPod(podPrefix, namespace, targetPodStatus = 'Running', waitTimeout = 30, context = null) {
     def pod = getPod(podPrefix, namespace, context)

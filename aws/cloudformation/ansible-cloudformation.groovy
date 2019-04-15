@@ -1,19 +1,27 @@
 #!/usr/bin/env groovy
-/*
- * Jenkins Modules: AWS Ansible Cloudformation helper.
+/**
+ ** Jenkins Modules:
+ * AWS Ansible Cloudformation helper.
  *
- * Important: this module relies on Ansible Jenkins Plugin, plus the ansible installed in the current jenkins server
+ ** IMPORTANT:
+ * This module relies on Ansible Jenkins Plugin, plus the ansible installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
- * 
- * @param ansiblePlayPath           Ansible playbook root context path
- * @param ansiblePlayFile           Ansible playbook setup.yml main file
- * @param AnsiblePlayRole           Ansible playbook cloudformation role to be executed 
- * @param ansiblePlayRoleVarsPrefix Ansible playbook cloudformation role variables prefix to to be executed
- * @param ansibleVaultPass          Ansible vault password
+ *
+ * This module has to be load as shown in the root context README.md
+ *
+ ** Function:
+ * Execute an Ansible Playbook with --vault-password-file
+ *
+ ** Parameters:
+ * @param String ansiblePlayPath           Ansible playbook root context path
+ * @param String ansiblePlayFile           Ansible playbook setup.yml main file
+ * @param String AnsiblePlayRole           Ansible playbook cloudformation role to be executed
+ * @param String ansiblePlayRoleVarsPrefix Ansible playbook cloudformation role variables prefix to to be executed
+ * @param String ansibleVaultPass          Ansible vault password
  */
 
 def call(String ansiblePlayPath, String ansiblePlayFile, String AnsiblePlayRole,
-         String ansiblePlayRoleVarsPrefix,ansibleVaultPass) {
+         String ansiblePlayRoleVarsPrefix, String ansibleVaultPass) {
 
     stage("\u2708 Select CF Stack to work with\u2705") {
 

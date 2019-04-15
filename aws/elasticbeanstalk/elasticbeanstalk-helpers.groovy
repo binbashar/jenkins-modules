@@ -1,22 +1,32 @@
 #!/usr/bin/env groovy
 import groovy.json.JsonSlurper
 /*
- * Jenkins Modules: AWS Elasticbeanstalk helper.
+ ** Jenkins Modules:
+ * AWS Elasticbeanstalk helper.
+ * ref link: https://aws.amazon.com/getting-started/tutorials/deploy-app-command-line-elastic-beanstalk/
  *
- * Important: this module relies on the AWS CLI to be configured to run as-is
+ ** IMPORTANT:
+ * this module relies on the AWS CLI to be configured to run as-is
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that. The module also uses 'jq' to parse JSON output.
  *
- * Important: at this moment this module can only handle values of type String
- * and SecureString.
+ * This module has to be load as shown in the root context README.md
+ *
  */
 
-/*
+/**
+ ** Function:
  * This function returns a list with EB environments for an specific application.
  * Will look for environment names starting with this name because is the envinronments
  * names follow the same prefix.
+ *
+ ** Parameters:
+ * @param String appName    AWS ElasticBeanstalk application name.
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String awsProfile AWS IAM profile.
+ * @param String awsRegion  AWS region.
  */
-def getEnvList(appName,envName, awsProfile, awsRegion){
+def getEnvList(String appName, String envName, String awsProfile, String awsRegion){
     envList = []
     cmd = "aws elasticbeanstalk describe-environments --application-name \"${appName}\" --profile ${awsProfile} --region ${awsRegion}"
 
@@ -38,11 +48,15 @@ def getEnvList(appName,envName, awsProfile, awsRegion){
     return envList
 }
 
-/*
+/**
+ ** Function:
  * This function will return the current active environment
  * Note: to be improved
+ *
+ ** Parameters:
+ * @param ArrayList envList     AWS ElasticBeanstalk environment list by name
  */
-def getCurrentEnv(envList){
+def getCurrentEnv(ArrayList envList){
     def retvar
     envList.any{
         retvar = "${it}"
@@ -51,12 +65,16 @@ def getCurrentEnv(envList){
     return retvar
 }
 
-/*
+/**
+ ** Function:
  * This function will return the new envinronment name to be used
  * in a BlueGreen deployment based on the current env name.
  * If there is no -BLUE or -GREEN env in place will start with BLUE
+ *
+ ** Parameters:
+ * @param ArrayList envList     AWS ElasticBeanstalk environment list by name
  */
-def getNextEnv(envList){
+def getNextEnv(ArrayList envList){
     def retvar
     envList.any{
         if (it.endsWith("-BLUE")){
@@ -76,12 +94,18 @@ def getNextEnv(envList){
     return retvar
 }
 
-/*
+/**
+ ** Function:
  * This function will return the internal endpoint of and envinronment.
  * Designed mostly to validate if an env is responding OK and swap when
  * using Blue/Green deployments
+ *
+ ** Parameters:
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String awsProfile AWS IAM profile.
+ * @param String awsRegion  AWS region.
  */
-def getEnvEndpoint(envName, awsProfile, awsRegion){
+def getEnvEndpoint(String envName, String awsProfile, String awsRegion){
     def retvar = null
     cmd = "aws elasticbeanstalk describe-environments --environment-names ${envName} --profile ${awsProfile} --region ${awsRegion}"
 
@@ -96,12 +120,18 @@ def getEnvEndpoint(envName, awsProfile, awsRegion){
     return retvar
 }
 
-/*
+/**
+ ** Function:
  * This function will return the envinronment health staus.
  * Designed mostly to validate if an env is OK and swap when
  * using Blue/Green deployments
+ *
+ ** Parameters:
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String awsProfile AWS IAM profile.
+ * @param String awsRegion  AWS region.
  */
-def getEnvHealthStatus(envName, awsProfile, awsRegion){
+def getEnvHealthStatus(String envName, String awsProfile, String awsRegion){
     cmd = "aws elasticbeanstalk describe-environments --environment-names ${envName} --profile ${awsProfile} --region ${awsRegion}"
 
     envDescriptionRaw = sh (
@@ -113,12 +143,18 @@ def getEnvHealthStatus(envName, awsProfile, awsRegion){
     return parsed.Environments['HealthStatus'][0]
 }
 
-/*
+/**
+ ** Function:
  * This function will return the color you see on AWS GUI of and envinronment.
  * Designed mostly to validate if an env is responding OK and swap when
  * using Blue/Green deployments
+ *
+ ** Parameters:
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String awsProfile AWS IAM profile.
+ * @param String awsRegion  AWS region.
  */
-def getEnvColor(envName, awsProfile, awsRegion){
+def getEnvColor(String envName, String awsProfile, String awsRegion){
     cmd = "aws elasticbeanstalk describe-environments --environment-names ${envName} --profile ${awsProfile} --region ${awsRegion}"
 
     envDescriptionRaw = sh (
@@ -130,14 +166,23 @@ def getEnvColor(envName, awsProfile, awsRegion){
     return parsed.Environments['Health'][0].toString().toUpperCase()
 }
 
-/*
+/**
+ ** Function:
  * This function will clone the current environment into a new one
  * and then will deploy the latest app version in the new one.
  * Expected result: keep two concurrent environments, the original untouched
  * and the new one with the latest app version + env vars according to the
  * app definition (based on config files)
+ *
+ ** Parameters:
+ * @param String sourceEnv  Current AWS ElasticBeanstalk environment to be cloned.
+ * @param String appPath    AWS ElasticBeanstalk application path where the
+ *                          .elasticbeanstalk folder with profile will be created
+ * @param String appEnvVars Application environment variables to be userd with
+ *                          eb setenv foo=bar JDBC_CONNECTION_STRING=hello PARAM4= PARAM5=
+ * @param String targetEnv  Target AWS ElasticBeanstalk environment to be created from clone operation.
  */
-def deploy_BG_eb(sourceEnv,appPath,appEnvVars, targetEnv){
+def deploy_BG_eb(String sourceEnv, String appPath, String appEnvVars, String targetEnv){
     dir("${appPath}"){
         stage("Clone ${sourceEnv} on ${targetEnv}"){
             sh "#!/bin/bash -e\n" +
@@ -148,16 +193,23 @@ def deploy_BG_eb(sourceEnv,appPath,appEnvVars, targetEnv){
         }
 
         stage("Deploying on: ${targetEnv}") {
-            deploy_eb(targetEnv,appPath,appEnvVars)
+            deploy_eb(targetEnv, appPath, appEnvVars)
         }
     }
 }
 
-/*
+/**
+ ** Function:
  * This function invokes EB command to swap CNAMEs between 2 environments.
  * Tipically used for Blue/Green deployments.
+ *
+ ** Parameters:
+ * @param String sourceEnv  Current AWS ElasticBeanstalk environment to be cloned.
+ * @param String appPath    AWS ElasticBeanstalk application path where the
+ *                          .elasticbeanstalk folder with profile will be created
+ * @param String targetEnv  Target AWS ElasticBeanstalk environment to be created from clone operation.
  */
-def swap_BG_env_eb(sourceEnv, appPath, targetEnv){
+def swap_BG_env_eb(String sourceEnv, String appPath, String targetEnv){
     dir("${appPath}"){
         stage("Swap BG from ${sourceEnv} to ${targetEnv}"){
             sh "#!/bin/bash -e\n" +
@@ -166,11 +218,17 @@ def swap_BG_env_eb(sourceEnv, appPath, targetEnv){
     }
 }
 
-/*
+/**
+ ** Function:
  * This function invokes EB command to terminate an environment.
  * Tipically used for Blue/Green deployments.
+ *
+ ** Parameters:
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String appPath    AWS ElasticBeanstalk application path where the
+ *                          .elasticbeanstalk folder with profile will be created
  */
-def terminate_BG_env_eb(envName,appPath){
+def terminate_BG_env_eb(String envName, String appPath){
     dir("${appPath}"){
         stage("Terminating ${envName}"){
             sh "#!/bin/bash -e\n" +
@@ -179,11 +237,19 @@ def terminate_BG_env_eb(envName,appPath){
     }
 }
 
-/*
+/**
+ ** Function:
  * This function will deploy EB assuming the app code is already in appPath
  * and setting environment vars passed on appEnvVars
+ *
+ ** Parameters:
+ * @param String envName    AWS ElasticBeanstalk environment name.
+ * @param String appPath    AWS ElasticBeanstalk application path where the
+ *                          .elasticbeanstalk folder with profile will be created
+ * @param String appEnvVars Application environment variables to be userd with
+ *                          eb setenv foo=bar JDBC_CONNECTION_STRING=hello PARAM4= PARAM5=
  */
-def deploy_eb(envName,appPath,appEnvVars){
+def deploy_eb(String envName, String appPath, String appEnvVars){
 
     dir("${appPath}"){
         sh "#!/bin/bash -e\n" +
@@ -200,4 +266,5 @@ def deploy_eb(envName,appPath,appEnvVars){
     }
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

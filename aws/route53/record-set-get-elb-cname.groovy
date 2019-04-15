@@ -2,7 +2,7 @@
 /**
  * Jenkins Modules: Get the public record of the given ELB name.
  *
- * Important: this module relies on the AWS CLI to be configured to run without
+ * IMPORTANT: this module relies on the AWS CLI to be configured to run without
  * any initial or additional setup. This module DOES NOT handle AWS credentials.
  *
  * @param elb_name ELB name
@@ -20,7 +20,9 @@ def call(elb_name) {
 
     } catch (Exception e) {
         echo "[ERROR] Error while running elb describe with name=${elb_name}"
+        echo "[ERROR] Exception: ${e}"
     }
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

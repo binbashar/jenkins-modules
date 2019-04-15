@@ -1,49 +1,89 @@
 #!/usr/bin/env groovy
 /*
- * Jenkins Modules: docker-machine create with AWS drivers
+ ** Jenkins Modules:
+ * docker-machine create with AWS drivers attaching EC2 profile
  *
- * Important: this module relies on docker and docker-machine, installed in the current jenkins server
+ ** IMPORTANT:
+ * This module relies on docker and docker-machine, installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
  *
- * @param machineName               docker-machine name for the aws EC2 instancec.
- * @param userInputInstanceType     --amazonec2-instance-type: The instance type to run.
- * @param awsAccessKeyId mysql      --amazonec2-access-key: Your access key ID for the Amazon Web Services API.
- * @param awsSecretAccessKey        --amazonec2-secret-key: Your secret access key for the Amazon Web Services API.
- * @param vpcId                     --amazonec2-vpc-id: Your VPC ID to launch the instance in.
- * @param subnetId                  --amazonec2-subnet-id: AWS VPC subnet ID.
- * @param portNumbersArray          --amazonec2-open-port: Make the specified port number accessible from the Internet.
- * @param rootEc2VolSize            --amazonec2-root-size: The root disk size of the instance (in GB).
- * @param ec2AmiId                  --amazonec2-ami: The AMI ID of the instance to use.
- * @param awsDmEc2Profile           --amazonec2-iam-instance-profile: The AWS IAM role name to be used as the instance profile.
- * @param publicIpAddr              --amazonec2-use-private-address: Use the private IP address for docker-machine,
- *                                  but still create a public IP address.
+ * This module has to be load as shown in the root context README.md
  */
 
-def extMain(userInputInstanceType, awsAccessKeyId, awsSecretAccessKey,machineName,vpcId,subnetId,
-            portNumbersArray,publicIpAddr,rootEc2VolSize,ec2AmiId,awsDmEc2Profile) {
+/**
+ *
+ ** Function:
+ * Based on the docker-machine AWS input arguments an AWS EC2 instance will be created
+ *
+ ** Parameters:
+ * @param String    dockerMachineName         docker-machine name for the aws EC2 instancec.
+ * @param String    userInputInstanceType     --amazonec2-instance-type: The instance type to run.
+ * @param String    awsAccessKeyId            --amazonec2-access-key: Your access key ID for the Amazon Web Services API.
+ * @param String    awsSecretAccessKey        --amazonec2-secret-key: Your secret access key for the Amazon Web Services API.
+ * @param String    vpcId                     --amazonec2-vpc-id: Your VPC ID to launch the instance in.
+ * @param String    subnetId                  --amazonec2-subnet-id: AWS VPC subnet ID.
+ * @param Integer[] portNumbersArray          --amazonec2-open-port: Make the specified port number accessible from the Internet.
+ * @param Integer   rootEc2VolSize            --amazonec2-root-size: The root disk size of the instance (in GB).
+ * @param String    ec2AmiId                  --amazonec2-ami: The AMI ID of the instance to use.
+ * @param String    awsDmEc2Profile           --amazonec2-iam-instance-profile: The AWS IAM role name to be used as the instance profile.
+ * @param Boolean   publicIpAddr              --amazonec2-use-private-address: Use the private IP address for docker-machine,
+ *                                              but still create a public IP address.
+ *
+ ** Examples:
+ *     // Getting AWS SSM (getStringValueWprofile Function has been deprecated - so take it just as an example)
+ *     String awsAccessKeyId = awsSsmHelper.getStringValueWprofile(ssmParamName1,true,aws_iam_role_profile_sr)
+ *     String awsSecretAccessKey = awsSsmHelper.getStringValueWprofile(ssmParamName2,true,aws_iam_role_profile_sr)
+ *
+ *     // Docker Machine AWs Size
+ *     String awsEc2Size = dockerMachineawsEc2Size()
+ *
+ *     // Creating Docker-Machine on AWS
+ *     String dockerMachineName = "${userInputApp}-${date}-${appEnv}"
+ *     Integer[] portNumbersArray = new Integer[2] as java.lang.Object
+ *     portNumbersArray[0] = 80
+ *     portNumbersArray[1] = 443
+ *     Integer rootEc2VolSize = 30
+ *     Boolean publicIpAddr = false
+ *
+ *     dockerMachineAws.call(awsEc2Size, awsAccessKeyId, awsSecretAccessKey, dockerMachineName, vpcId,
+ *                 subnetId, portNumbersArray, publicIpAddr, rootEc2VolSize, ec2AmiId, awsDmEc2Profile)
+ *
+ *     // or
+ *     // We can just run it with "externalCall(...)" since it has a call method.
+ *     dockerMachineAws(awsEc2Size, awsAccessKeyId, awsSecretAccessKey, dockerMachineName, vpcId,
+ *                 subnetId, portNumbersArray, publicIpAddr ,rootEc2VolSize, ec2AmiId, awsDmEc2Profile)
+ */
+
+def call(String userInputInstanceType, String awsAccessKeyId, String awsSecretAccessKey, String dockerMachineName,
+         String vpcId, String subnetId, Integer[] portNumbersArray, Boolean publicIpAddr,Integer rootEc2VolSize,
+         String ec2AmiId, String awsDmEc2Profile) {
 
     try {
         echo "Create docker machine ${userInputInstanceType} on AWS"
-        sh "#!/bin/bash \n" +
-                "docker -v && docker-compose -v && docker-machine -v"
+        //Validate docker OS pkg dependencies are satisfied.
+        sh """
+            #!/bin/bash
+            docker -v && docker-machine -v
+           """
 
         echo "AWS instance type: ${userInputInstanceType}"
         echo "AWS publicIpAddr: ${publicIpAddr}"
 
-        if (publicIpAddr == true) {
+        if (publicIpAddr) {
             if (portNumbersArray.length == 1) {
                 sh "#!/bin/bash +x \n" +
                         "docker-machine create --driver amazonec2 --amazonec2-access-key ${awsAccessKeyId} --amazonec2-secret-key ${awsSecretAccessKey}" +
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-instance-type ${userInputInstanceType}" +
-                        " --amazonec2-root-size ${rootEc2VolSize} --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-root-size ${rootEc2VolSize} --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${dockerMachineName}"
 
             } else if (portNumbersArray.length == 2) {
                 sh "#!/bin/bash +x \n" +
                         "docker-machine create --driver amazonec2 --amazonec2-access-key ${awsAccessKeyId} --amazonec2-secret-key ${awsSecretAccessKey}" +
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-open-port ${portNumbersArray[1]}" +
-                        " --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize} --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize}" +
+                        " --amazonec2-ssh-user ubuntu ${dockerMachineName}"
 
             } else if (portNumbersArray.length == 3) {
                 sh "#!/bin/bash +x \n" +
@@ -51,7 +91,7 @@ def extMain(userInputInstanceType, awsAccessKeyId, awsSecretAccessKey,machineNam
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-open-port ${portNumbersArray[1]}" +
                         " --amazonec2-open-port ${portNumbersArray[2]} --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize}" +
-                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${dockerMachineName}"
 
             }
         } else {
@@ -60,8 +100,8 @@ def extMain(userInputInstanceType, awsAccessKeyId, awsSecretAccessKey,machineNam
                         "docker-machine create --driver amazonec2 --amazonec2-access-key ${awsAccessKeyId} --amazonec2-secret-key ${awsSecretAccessKey}" +
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-private-address-only" +
-                        " --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize} --amazonec2-iam-instance-profile ${awsDmEc2Profile}" +
-                        " --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize}" +
+                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${dockerMachineName}"
 
             } else if (portNumbersArray.length == 2) {
                 sh "#!/bin/bash +x \n" +
@@ -69,7 +109,7 @@ def extMain(userInputInstanceType, awsAccessKeyId, awsSecretAccessKey,machineNam
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-open-port ${portNumbersArray[1]}" +
                         " --amazonec2-private-address-only --amazonec2-instance-type ${userInputInstanceType} --amazonec2-root-size ${rootEc2VolSize}" +
-                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${dockerMachineName}"
 
             } else if (portNumbersArray.length == 3) {
                 sh "#!/bin/bash +x \n" +
@@ -77,14 +117,16 @@ def extMain(userInputInstanceType, awsAccessKeyId, awsSecretAccessKey,machineNam
                         " -amazonec2-ami ${ec2AmiId} --amazonec2-region 'us-east-1' --amazonec2-vpc-id ${vpcId} --amazonec2-zone 'a'" +
                         " --amazonec2-subnet-id ${subnetId} --amazonec2-open-port ${portNumbersArray[0]} --amazonec2-open-port ${portNumbersArray[1]}" +
                         " --amazonec2-open-port ${portNumbersArray[2]} --amazonec2-private-address-only --amazonec2-instance-type ${userInputInstanceType}" +
-                        " --amazonec2-root-size ${rootEc2VolSize} --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${machineName}"
+                        " --amazonec2-root-size ${rootEc2VolSize} --amazonec2-iam-instance-profile ${awsDmEc2Profile} --amazonec2-ssh-user ubuntu ${dockerMachineName}"
             }
 
-            sh "docker-machine status ${machineName}"
+            sh "docker-machine status ${dockerMachineName}"
         }
     } catch (e) {
+        echo "[ERROR] Exception: ${e}"
         throw e as Throwable
     }
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

@@ -2,7 +2,7 @@
 /*
  * Jenkins Modules: PHP static code anaysis module.
  *
- * Important: this module relies on the proper versions of phpcpd and phpmd, as well as plugins PmdPublisher
+ * IMPORTANT: this module relies on the proper versions of phpcpd and phpmd, as well as plugins PmdPublisher
  * and DryPublisher  installed in the current jenkins server to be configured to run as-is, this module does not handle
  * that.
  *

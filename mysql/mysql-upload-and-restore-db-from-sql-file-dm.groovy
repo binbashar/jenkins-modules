@@ -2,7 +2,7 @@
 /*
  * Jenkins Modules: Mysql restore database from uploaded file.
  *
- * Important: this module relies on MYSQL CLI, docker and docker-machine, all of this pre-reqs must be installed in the 
+ * IMPORTANT: this module relies on MYSQL CLI, docker and docker-machine, all of this pre-reqs must be installed in the
  * current jenkins server and of course the DB_HOST to be reacheable to be configured to run as-is, this module does not
  * handle that.
  *
