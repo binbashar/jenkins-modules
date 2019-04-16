@@ -1,10 +1,19 @@
 #! /usr/bin/groovy
-/*
- * IMPORTANT: this script relies on HTTP Request Plugin >= v1.8.22
+/**
+ * Jenkins Module:
+ * Slack notification utilities.
  *
+ ** IMPORTANT:
+ * This script relies on HTTP Request Plugin >= v1.8.22
+ *
+ */
+
+/**
+ ** Function:
  * Send message to Slack channel.
  * API Spec: https://api.slack.com/methods/chat.postMessage
  *
+ ** Parameters:
  * @param String token Slack API token
  * @param String channel Channel name
  * @param String text Text message

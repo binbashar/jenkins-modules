@@ -1,11 +1,14 @@
 #!/usr/bin/env groovy
 /**
- * Jenkins Module: Slack notification utilities.
+ * Jenkins Module:
+ * Slack notification utilities.
  */
 
-/*
+/**
+ ** Function:
  * Send message with given color.
  *
+ ** Parameters:
  *  @param message      Text message
  *  @param colorCode    Hexadecimal color code
  */
