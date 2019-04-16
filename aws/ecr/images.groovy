@@ -36,9 +36,12 @@
  * Get a list of images that match the given prefix.
  *
  ** Parameters:
- * @param String repositoryName   AWS ECR repository name
- * @param String imagePrefix      AWS ECR docker image prefix
+ * @param String    repositoryName   AWS ECR repository name
+ * @param String    imagePrefix      AWS ECR docker image prefix
  *
+ * @return ArrayList matches         ArrayList of AWS ECR images tag and digest
+ *                                   - imageDigest  -> (string) - The sha256 digest of the image manifest.
+ *                                   - imageTag     -> (string) - The tag used for the image.
  */
 def getImagesByPrefix(repositoryName, imagePrefix) {
     def matches = []
@@ -63,6 +66,8 @@ def getImagesByPrefix(repositoryName, imagePrefix) {
  ** Parameters:
  * @param String      repositoryName    AWS ECR repository name
  * @param ArrayList   imagesList        AWS ECR image-names list
+ *
+ * @return Groovy Map from a call to ecrDeleteImages() function
  */
 def deleteImages(String repositoryName, ArrayList imagesList) {
     def imageIds = []
@@ -81,6 +86,25 @@ def deleteImages(String repositoryName, ArrayList imagesList) {
  * @param String    repositoryName   AWS ECR repository name
  * @param ArrayList imageIds         AWS ECR list of image ID references that correspond to images to delete.
  *                                   The format of the imageIds reference is imageTag=tag or imageDigest=digest.
+ *
+ * @return Groovy Map with the output of the 'aws ecr batch-delete-image' aws cli command
+ *
+ * eg:
+ * Deletes an image with the tag precise in a repository called ubuntu in the default registry for an account.
+ * Command: aws ecr batch-delete-image --repository-name ubuntu --image-ids imageTag=precise
+ * Output:
+ *
+ * {
+ *     "failures": [],
+ *     "imageIds": [
+ *         {
+ *             "imageTag": "precise",
+ *             "imageDigest": "sha256:19665f1e6d1e504117a1743c0a3d3753086354a38375961f2e665416ef4b1b2f"
+ *         }
+ *     ]
+ * }
+ *
+ * returned value -> [imageTag:"precise", imageDigest:"sha256:19665f1e6d1e504117a1743c0a3d3753086354a38375961f2e665416ef4b1b2f"]
  */
 def ecrDeleteImages(String repositoryName, ArrayList imageIds) {
     String cmd = "aws ecr batch-delete-image" +
@@ -96,6 +120,9 @@ def ecrDeleteImages(String repositoryName, ArrayList imageIds) {
  *
  ** Parameters:
  * @param repositoryName   AWS ECR repository name
+ *
+ * @return Groovy Map with the list of image IDs for the requested AWS ECR repository.
+ * Ref Link: https://docs.aws.amazon.com/cli/latest/reference/ecr/list-images.html
  */
 def ecrGetImages(repositoryName) {
     String cmd = "aws ecr list-images" +
@@ -111,10 +138,20 @@ def ecrGetImages(repositoryName) {
  * Parse the given JSON encoded string. It uses Jenkins' readJSON utility which is so much better
  * than Groovy's JSONSluper.
  *
+ * IMPORTANT:
+ * Reads a file in the current working directory or a String as a plain text JSON file.
+ * The returned object is a normal Map with String keys or a List of primitives or Map.
+ * eg:
+ *      def props = readJSON text: '{ "key": "value" }'
+ *      assert props['key'] == 'value'
+ *      assert props.key == 'value'
+ *
  *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ *
+ * @return Groovy Map decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

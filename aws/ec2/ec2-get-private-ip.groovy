@@ -16,7 +16,9 @@
  ** This function returns the EC2 private IP address based on the intance id passed as argument
  *
  ** Parameters:
- * @param String ec2_id      AWS EC2 id.
+ * @param String ec2_id             AWS EC2 id.
+ *
+ * @return String ec2PrivIpAddr     String containing the AWS EC2 private IP address, eg: '172.23.10.1'
  *
  ** Examples:
  * A) Sample usage from a Pipeline Stage (you must include the function in the same groovy script)
