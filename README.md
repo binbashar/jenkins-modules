@@ -7,6 +7,67 @@
 
 # DevOps Jenkins Modules
 
+### Pre-requisites 
+
+#### Cross module deps.
+- **Jenkins Server** >= 2.160 (https://jenkins.io/changelog/)
+    - This modules have been mostly tested on Jenkins under the following operating systems:\
+      Ubuntu 14.04 and 16.04.\
+      **NOTE:** There is a good chance it will work on other flavors of Debian, CentOS, and RHEL as well.
+
+- **Core Plugins:** pipeline-build-step, pipeline-stage-step, pipeline-stage-tags-metadata, pipeline-stage-view, pipeline-utility-steps.
+
+Depending on the module you would like to implement different plugins or OS binaries will be needed, such as:
+
+#### Specific module deps.
+
+1. ##### AWS modules
+    - **cloudformation:** 
+        - Ansible >= 2.5 (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+        - Ansible Jenkins Plugin (https://wiki.jenkins.io/display/JENKINS/Ansible+Plugin).   
+    - **ec2, ecr, eip, elb, sqs and ssm:**
+        - AWS cli (https://github.com/aws/aws-cli)
+    - **elasticbeanstalk:**
+        - AWS cli
+        - AWS awsebcli (https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html)  
+    - **route53:**
+        - AWS cli
+        - GNU/Linux pkgs `libssl-dev`, `python-dev`, `python-pip` and `python2.7`
+        - Python libraries: `fabric <= 1.14.1`, `boto3`, `pyOpenSSL` and `decorator`. 
+
+2. ##### database
+    - **mysql:**
+    
+3. ##### dns: 
+    -  GNU/Linux `nslookup` binary to properly work.
+       - Debian based pkg: `dnsutils`
+       - RHEL/Centos pkg: `bind-utils`
+       
+4. ##### docker-machine:
+
+5. ##### hashicorp
+    - vault
+
+6. ##### k8s
+
+7. ##### notifications
+    - slack
+
+8. ##### passbolt
+
+9. ##### php
+
+10. ##### python
+
+11. ##### scm
+
+12. ##### src
+
+13. ##### test
+
+14. ##### util
+
+
 ### Devops Groovy Module files import
 - Orig Ref @ https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/load-from-file/pipeline.groovy
 
@@ -124,7 +185,7 @@ node {
         String repositoryName = params.repositoryName
         String imagePrefix = params.imagePrefix
         
-        imagesList = ecrHelper.getImagesByPrefix(repositoryName, imagePrefix)
+        ArrayList imagesList = ecrHelper.getImagesByPrefix(repositoryName, imagePrefix)
         
         // Remove any matching images
         println "[INFO] Found " + imagesList.size() + " images to delete"
@@ -284,9 +345,9 @@ node {
                 ])
             }
 
-            parameterStoreHelper = load "jenkins-modules/aws/ssm/parameter-store.groovy"
-            vaultAuth = load "jenkins-modules/hashicorp/vault/auth.groovy"
-            vaultKv = load "jenkins-modules/hashicorp/vault/kv.groovy"
+            parameterStoreHelper = load "${gitJenkinsModName}/aws/ssm/parameter-store.groovy"
+            vaultAuth = load "${gitJenkinsModName}/hashicorp/vault/auth.groovy"
+            vaultKv = load "${gitJenkinsModName}/hashicorp/vault/kv.groovy"
         }
 
         stage("Parameter Store Get") {
@@ -369,9 +430,9 @@ node {
             ])
         }
 
-        vaultAuth = load "jenkins-modules/hashicorp/vault/auth.groovy"
-        vaultKv = load "jenkins-modules/hashicorp/vault/kv.groovy"
-        manifestHelper = load "jenkins-modules/k8s/manifest.groovy"
+        vaultAuth = load "${gitJenkinsModName}/hashicorp/vault/auth.groovy"
+        vaultKv = load "${gitJenkinsModName}/hashicorp/vault/kv.groovy"
+        manifestHelper = load "${gitJenkinsModName}/k8s/manifest.groovy"
     }
 
     stage ("Configure Application") {
@@ -403,6 +464,58 @@ node {
 
     stage ("Clean Up") {
         sh "rm ${manifestFile}"
+    }
+}
+```
+
+- **Module:** K8s kubectl Helper module.
+
+```groovy
+node {
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
+    
+    String k8sContext = params.k8sContext
+    String appName = params.appName
+    String envName = params.envName
+    String stackName = params.stackName
+    String podNamePrefix = "${appName}-api"
+    String namespace = "${appName}-${envName}-${stackName}"
+
+    def kubectlHelper
+    
+    stage ("Check-out Libraries") {
+        dir("${gitJenkinsModName}") {
+            checkout([
+                    $class: "GitSCM",
+                    branches: [[ name: gitJenkinsModVersionTag ]],
+                    userRemoteConfigs: [[
+                        credentialsId: gitJenkinsModCredentialsId,
+                        url: gitJenkinsModRepoUrl
+                    ]]
+            ])
+        }
+
+        kubectlHelper = load "${gitJenkinsModName}/k8s/kubectl.groovy"
+    }
+
+    stage ("Run Migrations") {
+        String podRequiredStatus = 'Running'
+        int waitTimeout = 30
+
+        try {
+            def pod = kubectlHelper.waitForPod(podNamePrefix, namespace, podRequiredStatus, waitTimeout, k8sContext)
+
+            String migrationsOutput = kubectlHelper.exec(pod.id, "python manage.py migrate", namespace, "-it", k8sContext)
+            println migrationsOutput
+
+        } catch (e) {
+            println "[WARNING] migrations could not be run as the pod did not become ready. Hint: ensure podNamePrefix is correct."
+            println "[WARNING] Exception: ${e}"
+            currentBuild.result = 'FAILURE'
+        }
     }
 }
 ```
