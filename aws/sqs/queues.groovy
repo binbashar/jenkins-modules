@@ -164,10 +164,16 @@ def ecrDeleteQueue(String queueUrl, String profile = null) {
  * Parse the given JSON encoded string. It uses Jenkins' readJSON utility which is so much better
  * than Groovy's JSONSluper.
  *
+ * IMPORTANT:
+ * Reads a file in the current working directory or a String as a plain text JSON file.
+ * The returned object is a normal Map with String keys or a List of primitives or Map.
+ *
  *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
+ *
+ * @return Groovy Map decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

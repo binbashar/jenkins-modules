@@ -18,6 +18,8 @@
  * @param String AnsiblePlayRole           Ansible playbook cloudformation role to be executed
  * @param String ansiblePlayRoleVarsPrefix Ansible playbook cloudformation role variables prefix to to be executed
  * @param String ansibleVaultPass          Ansible vault password
+ *
+ * @return NO return value. This call will execute the stages declared in this module.
  */
 
 def call(String ansiblePlayPath, String ansiblePlayFile, String AnsiblePlayRole,
@@ -58,4 +60,5 @@ def call(String ansiblePlayPath, String ansiblePlayFile, String AnsiblePlayRole,
     }
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

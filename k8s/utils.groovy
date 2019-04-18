@@ -1,13 +1,28 @@
 #!/usr/bin/env groovy
 /*
+ ** Kubernetes Modules:
  * Simple set of utility functions to work with Kubernetes.
- * IMPORTANT: it requires a `kubectl` that is set up and working.
+ *
+ ** IMPORTANT:
+ * This module relies on the `kubectl` CLI to be properly configured
+ * and ready to use.
+ *
+ ** Dev Notes:
+ * The main point of this module is to help reduce code repetition
+ * and to provide an interface that is more friendly than that of Jenkins Shell
+ * plugin. This module DOES NOT attempt to become an exhaustive helper that
+ * provides support to all kubectl commands/sub-commands as that would become
+ * hard to maintain rather easily.
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
 
-/*
+/**
+ ** Function:
  * Simple function to determine the existence of any given object by its name.
  * 
+ ** Parameters:
  * @param String objectType A valid k8s object type such as pod, po, service, svc, etc
  * @param String objectName The name of the object which is normally found in its metadata
  * @return Boolean

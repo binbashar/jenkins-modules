@@ -1,23 +1,44 @@
 #!/usr/bin/env groovy
 /*
- * Kubernetes Modules: kubectl basic wrapper.
+ ** Kubernetes Modules:
+ * kubectl basic wrapper.
  *
- * IMPORTANT: this module relies on the `kubectl` CLI to be properly configured
+ ** IMPORTANT:
+ * This module relies on the `kubectl` CLI to be properly configured
  * and ready to use.
  *
- * Dev Notes: the main point of this module is to help reduce code repetition
+ ** Dev Notes:
+ * The main point of this module is to help reduce code repetition
  * and to provide an interface that is more friendly than that of Jenkins Shell
  * plugin. This module DOES NOT attempt to become an exhaustive helper that
  * provides support to all kubectl commands/subcommands as that would become
  * hard to maintain rather easily.
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
-
-/*
+/**
+ ** Function:
  * Execute the given command on the given podId. Optionally you can pass a
  * namespace and override any command options you need.
+ *
+ ** Parameters:
+ * @param String podId      K8s Pod ID.
+ * @param String cmd        Bash command to be executed in the K8s pod identified by 'podId' argument.
+ * @param String namespace  K8s namespace where your Pod is deployed.
+ * @param String cmdOptions K8s kubectl cmd options
+ *                          Options:
+ *                          -c, --container='': Container name. If omitted, the first container in the pod will be chosen
+ *                          -i, --stdin=false: Pass stdin to the container
+ *                          -t, --tty=false: Stdin is a TTY
+ * @param String context    K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) to be used.
+ *                          useful kubectl context helper cmds:
+ *                          $kubectl config get-contexts                # display list of contexts
+ *                          $kubectl config current-context             # display the current-context
+ *                          $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
  */
-def exec(podId, cmd, namespace = "default", cmdOptions = "-it", context = null) {
+def exec(String podId, String cmd, String namespace = "default", String cmdOptions = "-it", String context = null) {
+    // BooleanExpression ?If_True_Use_This_Expression :If_False_Use_This_Expression
     String useContext = (context) ? " --context \"${context}\"" : ""
     String podCmd = """
 kubectl exec ${useContext} -n \"${namespace}\" ${cmdOptions} ${podId} -- ${cmd}
@@ -26,13 +47,23 @@ kubectl exec ${useContext} -n \"${namespace}\" ${cmdOptions} ${podId} -- ${cmd}
     return podOut
 }
 
-/*
+/**
+ ** Function:
  * Get pod name and status for the given pod prefix and optional namespace.
+ *
+ ** Parameters:
+ * @param String podPrefix  K8s Pod name prefix in order to filter with bash grep cmd.
+ * @param String namespace  K8s namespace where your Pod is deployed.
+ * @param String context    K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) to be used.
+ *                          useful kubectl context helper cmds:
+ *                          $kubectl config get-contexts                # display list of contexts
+ *                          $kubectl config current-context             # display the current-context
+ *                          $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
  */
-def getPod(podPrefix, namespace = "default", context = null) {
+def getPod(String podPrefix, String namespace = "default", String context = null) {
     def podData = [id: '', status: '']
+    // BooleanExpression ?If_True_Use_This_Expression :If_False_Use_This_Expression
     String useContext = (context) ? " --context \"${context}\"" : ""
-
     String cmd = """
 kubectl get pods ${useContext} -n \"${namespace}\" \
 | grep \"${podPrefix}\" \
@@ -51,7 +82,8 @@ kubectl get pods ${useContext} -n \"${namespace}\" \
 }
 
 /*
- * Get current context.
+ ** Function:
+ * Get current K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config).
  */
 def getContext() {
     String cmd = 'kubectl config current-context'
@@ -59,10 +91,14 @@ def getContext() {
     return context
 }
 
-/*
- * Set the given context as the current context.
+/**
+ ** Function:
+ *  Set the given K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) as the current context.
+ *
+ ** Parameters:
+ * @param String context    K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) to be used.
  */
-def setContext(context) {
+def setContext(String context) {
     String cmd = "kubectl config use-context ${context}"
     String result = sh(returnStdout: true, script: cmd).trim()
 
@@ -73,12 +109,34 @@ def setContext(context) {
     return false
 }
 
-/*
+/**
+ ** Function:
  * Wait for pod to match the provided target status. The waiting will be bounded
  * to a default timeout that can optionally be specified.
- * IMPORTANT: an exception will be thrown if the timeout is exceeded.
+ *
+ ** IMPORTANT: an exception will be thrown if the timeout is exceeded.
+ *
+ ** Parameters:
+ * @param String podPrefix          K8s Pod name prefix in order to filter with bash grep cmd.
+ * @param String namespace          K8s namespace where your Pod is deployed.
+ * @param String targetPodStatus    K8s Pod status (defaults to 'Running')
+ *                                  - Pending	The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created.
+ *                                  - Running	The Pod has been bound to a node, and all of the Containers have been created.
+ *                                  - Succeeded	All Containers in the Pod have terminated in success, and will not be restarted.
+ *                                  - Failed	All Containers in the Pod have terminated, and at least one Container has terminated in failure.
+ *                                  - Unknown	For some reason the state of the Pod could not be obtained, typically due to an error in communicating with the host of the Pod.
+ *                                  - Completed	The pod has run to completion as there’s nothing to keep it running eg. Completed Jobs.
+ *                                  - CrashLoopBackOff	This means that one of the containers in the pod has exited unexpectedly, and perhaps with a non-zero error
+ *                                    code even after restarting due to restart policy.
+ * @param String context            K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) to be used.
+ *                                  useful kubectl context helper cmds:
+ *                                  $kubectl config get-contexts                # display list of contexts
+ *                                  $kubectl config current-context             # display the current-context
+ *                                  $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
+ * @param Integer waitTimeout       Integer value of seconds to wait for a K8s Pod to be in Running state.
  */
-def waitForPod(podPrefix, namespace, targetPodStatus = 'Running', waitTimeout = 30, context = null) {
+def waitForPod(String podPrefix, String namespace, String targetPodStatus = 'Running', Integer waitTimeout = 30,
+               String context = null) {
     def pod = getPod(podPrefix, namespace, context)
     if (pod.status != targetPodStatus) {
         timeout(time: waitTimeout, unit: 'SECONDS') {

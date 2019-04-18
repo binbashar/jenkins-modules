@@ -4,7 +4,10 @@
  * Module to validate if a DNS record currently exists
  * 
  ** IMPORTANT:
- * This module handle AWS IAM profile credentials.
+ * This module relies on the GNU/Linux 'nslookup' binary to properly work.
+ * Consider:
+ *      - Debian based pkg: dnsutils
+ *      - RHEL/Centos pkg: bind-utils
  *
  * This module has to be load as shown in the root context README.md
  */

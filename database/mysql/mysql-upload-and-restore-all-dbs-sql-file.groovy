@@ -1,29 +1,31 @@
 #!/usr/bin/env groovy
-/*
- * Jenkins Modules: Mysql restore database from uploaded file.
+/**
+ ** Jenkins Modules:
+ * Mysql restore database from uploaded file.
  *
- * IMPORTANT: this module relies on MYSQL CLI, installed in the current jenkins server and of course the dbHost to be
- * reacheable to be configured to run as-is, this module does not handle that.
+ ** IMPORTANT:
+ * This module relies on MYSQL CLI, installed in the current jenkins server and of course the dbHost to be
+ * reachable to be configured to run as-is, this module does not handle that.
  *
- * @param mysqlUser     mysql user to be passed as parameter in the cli
- * @param mysqlRootPass mysql user password (with the necessary permissions) to be passed as parameter in the cli
- * @param dbHost        mysql db server host where the db from file will be restored
+ ** Parameters:
+ * @param String mysqlUser     mysql user to be passed as parameter in the cli
+ * @param String mysqlRootPass mysql user password (with the necessary permissions) to be passed as parameter in the cli
+ * @param String dbHost        mysql db server host where the db from file will be restored
  */
+def call(String mysqlUser, String mysqlRootPass, String dbHost) {
 
-def call(mysqlUser,mysqlRootPass,dbHost) {
-
-    String userInput_upload_sql_file = ""
+    String userInputUploadSqlFile = ""
     try {
             stage('Would you like to upload a .sql file to run on the database?') {
                 //noinspection GroovyAssignabilityCheck
-                userInput_upload_sql_file = input(
-                        id: 'userInput_upload_sql_file', message: 'Would you like to upload .sql file?', ok: 'Submit', parameters: [
+                userInputUploadSqlFile = input(
+                        id: 'userInputUploadSqlFile', message: 'Would you like to upload .sql file?', ok: 'Submit', parameters: [
                         [$class: 'ChoiceParameterDefinition', choices: 'Yes\nNo', description: 'Database update file', name: 'target']
                 ])
-                echo "SQL file is going to be uploaded: ${userInput_upload_sql_file}"
+                echo "SQL file is going to be uploaded: ${userInputUploadSqlFile}"
             }
 
-            if (userInput_upload_sql_file == 'Yes') {
+            if (userInputUploadSqlFile == 'Yes') {
               stage('file input') {
                   // Get file using input step, will put it in build directory
                   //noinspection GroovyAssignabilityCheck
@@ -33,12 +35,12 @@ def call(mysqlUser,mysqlRootPass,dbHost) {
                   // Stash it for use in a different part of the pipeline
                   stash name: 'data', includes: 'migration.sql'
 
-                  def mysqlFile = readFile 'migration.sql'
-                  echo "Content of input file: ${mysqlFile}"
+                  String mysqlFileCode = readFile 'migration.sql'
+                  echo "Content of input file: ${mysqlFileCode}"
 
-                  File mysql_file = new File("${env.WORKSPACE}/migration.sql")
+                  File mysqlFile = new File("${env.WORKSPACE}/migration.sql")
 
-                 if (!mysql_file.exists()) {
+                 if (!mysqlFile.exists()) {
                       echo ("File does not exist")
                  } else {
                       echo ("File does EXISTS")
@@ -50,10 +52,13 @@ def call(mysqlUser,mysqlRootPass,dbHost) {
                             "cat migration.sql | mysql -h ${dbHost} -u ${mysqlUser} --password=${mysqlRootPass} ${DB_NAME}"
                 }
             }
+
         } catch (e) {
+            echo "[ERROR] Exception: ${e}"
             throw e as Throwable
         }
     }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this
 
