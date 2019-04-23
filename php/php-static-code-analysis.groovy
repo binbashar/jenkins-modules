@@ -1,11 +1,14 @@
 #!/usr/bin/env groovy
-/*
- * Jenkins Modules: PHP static code anaysis module.
+/**
+ * Jenkins Modules:
+ * PHP static code anaysis module.
  *
- * IMPORTANT: this module relies on the proper versions of phpcpd and phpmd, as well as plugins PmdPublisher
+ * IMPORTANT:
+ * This module relies on the proper versions of phpcpd and phpmd, as well as plugins PmdPublisher
  * and DryPublisher  installed in the current jenkins server to be configured to run as-is, this module does not handle
  * that.
  *
+ ** Parameters:
  * @param rootDir   Jenkins workspace root context dir
  * @param dataDir   PHP app code root context dir
  */

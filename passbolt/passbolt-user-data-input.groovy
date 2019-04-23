@@ -4,6 +4,15 @@
  *
  * IMPORTANT: this module relies docker and docker-machine installed in the current jenkins server to be configured to
  * run as-is, this module does not handle that.
+ *
+ ** Example:
+ * PASSBOLT_USER_DATA = load "${JENKINSFILES_MODS}/passbolt/jenkins_pipeline-passbolt_user_data.groovy"
+ * PASSBOLT_USER_CREATION = load "${JENKINSFILES_MODS}/passbolt/jenkins_pipeline-passbolt_user_creation_2.x.groovy"
+ * PASSBOLT_USER_DATA.extMain()
+ * PASSBOLT_USER_TYPE = PASSBOLT_USER_DATA.returnPassboltUserType()
+ * PASSBOLT_USER_EMAIL = PASSBOLT_USER_DATA.returnPassboltUserEmail()
+ * PASSBOLT_USER_NAME = PASSBOLT_USER_DATA.returnPassboltUserName()
+ * PASSBOLT_USER_LASTNAME = PASSBOLT_USER_DATA.returnPassboltUserLastname()
  */
 
 String passboltUserType = ""

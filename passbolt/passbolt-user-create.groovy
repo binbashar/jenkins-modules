@@ -4,6 +4,10 @@
  *
  * IMPORTANT: this module relies docker and docker-machine installed in the current jenkins server to be configured to
  * run as-is, this module does not handle that.
+ *
+ * This module also expects a dockerized passbolt server running (https://hub.docker.com/r/passbolt/passbolt/)
+ *
+ * This module has to be load as shown in the root context README.md
  */
 
 def call(DockerMachineName,ContNamePassbolt,PassboltDomain,PassboltUserType,PassboltUserEmail,PassboltUserName,PassboltUserLastname) {
@@ -22,8 +26,6 @@ def call(DockerMachineName,ContNamePassbolt,PassboltDomain,PassboltUserType,Pass
 }
 
 return this
-
-
 
 /** HELPERS
 $docker exec passbolt su -m -c "/var/www/passbolt/bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
