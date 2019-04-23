@@ -8,7 +8,7 @@
  * @param String checkUrl   URL to be tested
  *
  ** Examples:
- * A) Sample usage from a Pipeline Stage(you must include the function)
+ * A) Sample usage from a Pipeline Stage(you must include the function in the same groovy script)
  *
  *  node {
  *      stage('Https curl request') {
