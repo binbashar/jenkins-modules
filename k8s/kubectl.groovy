@@ -36,6 +36,12 @@
  *                          $kubectl config get-contexts                # display list of contexts
  *                          $kubectl config current-context             # display the current-context
  *                          $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
+ *
+ * @return String podOut    Return the standard output of the command executed inside the Pod
+ * eg:
+ * String podOutCmd = exec("spin-deck-7fb595fdbc-tbdbm", "spinnaker","-it,minikube")
+ * // func will exec: kubectl exec --context minikube -n spinnaker -it spin-deck-7fb595fdbc-tbdbm -- pwd
+ * podOutCmd == "/opt/deck"
  */
 def exec(String podId, String cmd, String namespace = "default", String cmdOptions = "-it", String context = null) {
     // BooleanExpression ?If_True_Use_This_Expression :If_False_Use_This_Expression
@@ -47,6 +53,16 @@ kubectl exec ${useContext} -n \"${namespace}\" ${cmdOptions} ${podId} -- ${cmd}
     return podOut
 }
 
+def getContext() {
+    String cmd = 'kubectl config current-context'
+    String context = sh(returnStdout: true, script: cmd).trim()
+    return context
+}
+
+/*
+ ** Function:
+ * Get current K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config).
+ */
 /**
  ** Function:
  * Get pod name and status for the given pod prefix and optional namespace.
@@ -59,6 +75,21 @@ kubectl exec ${useContext} -n \"${namespace}\" ${cmdOptions} ${podId} -- ${cmd}
  *                          $kubectl config get-contexts                # display list of contexts
  *                          $kubectl config current-context             # display the current-context
  *                          $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
+ *
+ * @return podData          Groovy Map containing the 1st K8s podID listed through 'get pods' kubectl cmd as key and
+ *                          it's status as value.
+ *                          Example:
+ *                          // Kubectl Cmd: kubectl get pods --context minikube -n spinnaker| grep spin-deck | head -1 | awk '{print $1, $3}'
+ *                          Groovy Map returned: [spin-deck-7fb595fdbc-tbdbm:'Running']
+ *                          Possible Pod Status:
+ *                          - Pending	The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created.
+ *                          - Running	The Pod has been bound to a node, and all of the Containers have been created.
+ *                          - Succeeded	All Containers in the Pod have terminated in success, and will not be restarted.
+ *                          - Failed	All Containers in the Pod have terminated, and at least one Container has terminated in failure.
+ *                          - Unknown	For some reason the state of the Pod could not be obtained, typically due to an error in communicating with the host of the Pod.
+ *                          - Completed	The pod has run to completion as there’s nothing to keep it running eg. Completed Jobs.
+ *                          - CrashLoopBackOff	This means that one of the containers in the pod has exited unexpectedly, and perhaps with a non-zero error
+ *                          code even after restarting due to restart policy.
  */
 def getPod(String podPrefix, String namespace = "default", String context = null) {
     def podData = [id: '', status: '']
@@ -81,22 +112,14 @@ kubectl get pods ${useContext} -n \"${namespace}\" \
     return podData
 }
 
-/*
- ** Function:
- * Get current K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config).
- */
-def getContext() {
-    String cmd = 'kubectl config current-context'
-    String context = sh(returnStdout: true, script: cmd).trim()
-    return context
-}
-
 /**
  ** Function:
  *  Set the given K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) as the current context.
  *
  ** Parameters:
  * @param String context    K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) to be used.
+ *
+ * @return Boolean          If K8s kubectl context switch successfully happened return true, else return false.
  */
 def setContext(String context) {
     String cmd = "kubectl config use-context ${context}"
@@ -134,9 +157,14 @@ def setContext(String context) {
  *                                  $kubectl config current-context             # display the current-context
  *                                  $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
  * @param Integer waitTimeout       Integer value of seconds to wait for a K8s Pod to be in Running state.
+ *
+ * @return pod                      Groovy Map containing the 1st K8s podID listed through 'get pods' kubectl cmd as key and
+ *                                  it's status as value which should be 'Running' after the wait for pod period
+ *                                  eg: [spin-deck-7fb595fdbc-tbdbm:'Running']
  */
 def waitForPod(String podPrefix, String namespace, String targetPodStatus = 'Running', Integer waitTimeout = 30,
                String context = null) {
+    // Groovy Map returned by getPod() function. eg: [spin-deck-7fb595fdbc-tbdbm:'Running']
     def pod = getPod(podPrefix, namespace, context)
     if (pod.status != targetPodStatus) {
         timeout(time: waitTimeout, unit: 'SECONDS') {
@@ -151,4 +179,5 @@ def waitForPod(String podPrefix, String namespace, String targetPodStatus = 'Run
     return pod
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

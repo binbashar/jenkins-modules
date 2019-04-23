@@ -28,6 +28,8 @@
  * @param String name       K8s secret name.
  * @param String namespace  K8s namespace where your Pod is deployed.
  * @param Map   secrets     Groovy map with K8s namespace where your Pod is deployed.
+ *
+ * @return String template  It contains the the K8s secret manifest in .yml syntax.
  */
 def buildSecret(String name, String namespace, def secrets = [:]) {
     String secretsYml = ""
@@ -53,4 +55,5 @@ ${secretsYml}
     return template
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this
