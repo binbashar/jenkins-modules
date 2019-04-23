@@ -29,6 +29,8 @@
  * @param Boolean   publicIpAddr              --amazonec2-use-private-address: Use the private IP address for docker-machine,
  *                                              but still create a public IP address.
  *
+ * @return NO return value. This call will execute the stages declared in this module function.
+ *
  ** Examples:
  *     // Getting AWS SSM (getStringValueWprofile Function has been deprecated - so take it just as an example)
  *     String awsAccessKeyId = awsSsmHelper.getStringValueWprofile(ssmParamName1,true,aws_iam_role_profile_sr)

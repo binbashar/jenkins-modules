@@ -17,6 +17,8 @@
  *     parameter(name: 'parameters', type: 'Map'), parameter(name: 'submitter', type: 'java.lang.String'),
  *     parameter(name: 'submitterParameter', type: 'java.lang.String'), ], doc: 'Wait for interactive input')
  *
+ ** Parameters:
+ * @return String userInputEc2Size  AWS EC2 Type: t2.micro, t2.small, t2.medium or t2.large
  *
  ** Examples:
  *     // Docker Machine AWs Size

@@ -16,7 +16,9 @@
  * interactively choose the docker-machine to work with afterwards returning the docker-machine name.
  *
  ** Parameters:
- * @param String projectName    Project name (or custom string) to filter the docker-machine ls output.
+ * @param String projectName                    Project name (or custom string) to filter the docker-machine ls output.
+ *
+ * @return String userInputDockerMachineName    Docker Machine Name
  *
  ** Examples:
  *  dockerMachineName = dockerMachineHelper.getDmNameInteractively("py-flask-app")

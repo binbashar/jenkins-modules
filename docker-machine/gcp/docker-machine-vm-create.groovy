@@ -19,6 +19,8 @@
  * @param String    userInputVmSize    --google-disk-type: The disk type of instance.
  * @param Integer   rootVmDiskSize     --google-disk-size: The disk size of instance.
  *
+ * @return NO return value. This call will execute the stages declared in this module function.
+ *
  ** Examples:
  *     // Docker Machine GPC Size
  *     String userInputVmSize = dockerMachineawsVmSize()

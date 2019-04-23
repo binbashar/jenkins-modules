@@ -17,6 +17,9 @@
  *     parameter(name: 'parameters', type: 'Map'), parameter(name: 'submitter', type: 'java.lang.String'),
  *     parameter(name: 'submitterParameter', type: 'java.lang.String'), ], doc: 'Wait for interactive input')
  *
+ ** Parameters:
+ * @return String userInputVmSize  GCP VPM Type: f1-micro, g1-small, n1-standard-1 or n1-standard-2.
+ *
  ** Examples:
  *     // Docker Machine AWs Size
  *     String gcpVmSize = dockerMachinegcpVmSize()
