@@ -1,11 +1,14 @@
 #! /usr/bin/groovy
+import groovy.json.JsonSlurper
+
 /**
- * Jenkins Module:
+ ** Jenkins Module:
  * Slack notification utilities.
  *
  ** IMPORTANT:
  * This script relies on HTTP Request Plugin >= v1.8.22
  *
+ * This module has to be load as shown in the root context README.md
  */
 
 /**
@@ -14,13 +17,14 @@
  * API Spec: https://api.slack.com/methods/chat.postMessage
  *
  ** Parameters:
- * @param String token Slack API token
- * @param String channel Channel name
- * @param String text Text message
- * @param String threadId Thread identifier that can be used for starting a thread
+ * @param String token      Slack API token
+ * @param String channel    Channel name
+ * @param String text       Text message
+ * @param String threadId   Thread identifier that can be used for starting a thread
+ *
  * @return A Groovy map as specified here: https://api.slack.com/methods/chat.postMessage#response
  *
- * Example:
+ ** Example:
  *  slackResponse = sendMessage('MY-TOKEN', 'notifications', 'First message')
  *  ...
  *  sendMessage('MY-TOKEN', 'notifications', 'Another message on a thread', slackResponse['ts'])
@@ -42,7 +46,7 @@ def sendMessage(String token, String channel, String text, String threadId = nul
         requestBody: jsonBody
 
     if (response.status == 200) {
-        def jsonParser = new groovy.json.JsonSlurper()
+        def jsonParser = new JsonSlurper()
         return jsonParser.parseText(response.content)
     } else {
         println "[ERROR] Unexpected response with status=" + response.status + ", content=" + response.content
@@ -50,4 +54,5 @@ def sendMessage(String token, String channel, String text, String threadId = nul
     return null
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this
