@@ -24,6 +24,8 @@
  * @param String dnsRecordSetValue   DNS record set value
  * @param String awsIamProfile        DNS record set value
  *
+ * @return NO return value. This call will execute the stages declared in this module function.
+ *
  ** Examples:
  * String rootDir = pwd()
  * String jenkinsModulesPath = "${rootDir}/jenkins_modules"

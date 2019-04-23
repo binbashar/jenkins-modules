@@ -164,4 +164,5 @@ def parseJson(String jsonString) {
     return decodedJson
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

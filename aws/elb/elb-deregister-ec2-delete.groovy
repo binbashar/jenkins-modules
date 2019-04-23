@@ -12,17 +12,19 @@
 
 /**
  ** Function:
- * This function deletes an existingElastic Load Balacer (VPC Classic type) previously deregistering a pre existing Ec2
+ * This function deletes an existingElastic Load Balancer (VPC Classic type) previously deregistering a pre existing Ec2
  * that was attached to this ELB.
  *
  ** Parameters:
- * @param String load_balancer_name     AWS ELB name.
- * @param String ec2_id                 AWS EC2 ID.
+ * @param String elbName    AWS ELB name.
+ * @param String ec2Id      AWS EC2 ID.
+ *
+ * @return NO return value. This call will execute the stages declared in this module function.
  */
 
 /*
  ** Examples:
- * A) Sample usage from a Pipeline Stage (you must include the function)
+ * A) Sample usage from a Pipeline Stage (you must include the function in the same groovy script)
  *
  *  node {
  *      stage('EIP delete elb http port and deregister ec2  Sample') {
@@ -39,17 +41,17 @@
  *   // We can just run it with "externalCall(...)" since it has a call method.
  *   elbDeleteRegister(nubi-infra-jenkins-public,i-0c071000c63b1200d)
  */
-def call(String load_balancer_name, String ec2_id) {
+def call(String elbName, String ec2Id) {
 
     // Reference awscli cmd
     //aws elb deregister-instances-with-load-balancer --load-balancer-name my-load-balancer --instances i-d6f6fae3
     sh "aws elb deregister-instances-from-load-balancer " +
-            "--load-balancer-name ${load_balancer_name} " +
-            "--instances ${ec2_id}"
+            "--load-balancer-name ${elbName} " +
+            "--instances ${ec2Id}"
 
     // Reference awscli cmd
     //aws elb delete-load-balancer --load-balancer-name my-load-balancer
-    sh "aws elb delete-load-balancer --load-balancer-name ${load_balancer_name}"
+    sh "aws elb delete-load-balancer --load-balancer-name ${elbName}"
 
     sleep 10
 }

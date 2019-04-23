@@ -19,7 +19,7 @@
  * @param String ansiblePlayRoleVarsPrefix Ansible playbook cloudformation role variables prefix to to be executed
  * @param String ansibleVaultPass          Ansible vault password
  *
- * @return NO return value. This call will execute the stages declared in this module.
+ * @return NO return value. This call will execute the stages declared in this module function.
  */
 
 def call(String ansiblePlayPath, String ansiblePlayFile, String AnsiblePlayRole,

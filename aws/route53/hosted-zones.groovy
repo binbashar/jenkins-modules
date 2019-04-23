@@ -37,6 +37,9 @@
  *
  ** Parameters:
  * @param String domainName      AWS Route53 resource record set domain name.
+ *
+ * @return String zoneId        AWS Route53 parsed hosted zone Id. The ID that Amazon Route 53 assigned to the hosted
+ *                              zone when you created it without the std output prefix /hostedzone/. eg: 'Z3P5QSUBK4POTI'
  */
 def getHostedZoneId(String domainName) {
     String zoneCmd = "aws route53 list-hosted-zones-by-name --dns-name ${domainName} --query 'HostedZones[0].Id'"
@@ -52,6 +55,9 @@ def getHostedZoneId(String domainName) {
  ** Parameters:
  * @param String hostedZoneId    AWS Route53 hosted zone ID.
  * @param String domainName      AWS Route53 resource record set domain name.
+ *
+ * @return Boolean              If the AWS Route53 record set exists return true if not false.
+ * Ref link: https://docs.aws.amazon.com/cli/latest/reference/route53/list-hosted-zones-by-name.html
  */
 def hasRecordSet(String hostedZoneId, String domainName) {
     String recordSet = getRecordSet(hostedZoneId, domainName)
@@ -65,11 +71,14 @@ def hasRecordSet(String hostedZoneId, String domainName) {
  ** Function:
  * Get the record set data for the given hosted zone id and domain name.
  *
- * @param String hostedZoneId    AWS Route53 hosted zone ID.
- * @param String domainName      AWS Route53 resource record set domain name.
+ * @param String hostedZoneId   AWS Route53 hosted zone ID.
+ * @param String domainName     AWS Route53 resource record set domain name.
+ *
+ * @return String cmdOutput     AWS Route53 record set data for the given hosted zone id and domain name.
  */
 def getRecordSet(String hostedZoneId, String domainName) {
-    String route53Cmd = "aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId} --query \"ResourceRecordSets[?Name == '${domainName}']\""
+    String route53Cmd = "aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId}" +
+            " --query \"ResourceRecordSets[?Name == '${domainName}']\""
     String cmdOutput = sh(returnStdout: true, script: route53Cmd).trim()
     return cmdOutput
 }
@@ -83,6 +92,12 @@ def getRecordSet(String hostedZoneId, String domainName) {
  * @param String domainName            AWS Route53 resource record set domain name.
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
+ *
+ * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ *                                     String keys or a List of primitives or Map.
+ *                                     eg: [ChangeInfo:[Status:PENDING, Comment:optional comment about the changes in
+ *                                     this change batch request, SubmittedAt:2018-07-10T19:39:37.757Z,
+ *                                     Id:/change/C3QYC83OA0KX5K]]
  */
 def createAliasRecordSet(String hostedZoneId, String domainName, String aliasHostedZoneId, String aliasDnsName) {
     return changeRecordSet("CREATE", "A", hostedZoneId, domainName, aliasHostedZoneId, aliasDnsName)
@@ -97,6 +112,12 @@ def createAliasRecordSet(String hostedZoneId, String domainName, String aliasHos
  * @param String domainName            AWS Route53 resource record set domain name.
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
+ *
+ * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ *                                     String keys or a List of primitives or Map.
+ *                                     eg: [ChangeInfo:[Status:PENDING, Comment:optional comment about the changes in
+ *                                     this change batch request, SubmittedAt:2018-07-10T19:39:37.757Z,
+ *                                     Id:/change/C3QYC83OA0KX5K]]
  */
 def deleteAliasRecordSet(String hostedZoneId, String domainName, String aliasHostedZoneId, String aliasDnsName) {
     return changeRecordSet("DELETE", "A", hostedZoneId, domainName, aliasHostedZoneId, aliasDnsName)
@@ -108,15 +129,30 @@ def deleteAliasRecordSet(String hostedZoneId, String domainName, String aliasHos
  * as generic as possible but keep in mind it only supports the 2 methods above.
  *
  ** Parameters:
- * @param action                ChangeResourceRecordSets
- *                              Required Permissions (API Action): route53:ChangeResourceRecordSets
- *                              Resources: arn:aws:route53:::hostedzone/hosted zone ID
+ * @param action                        ChangeResourceRecordSets
+ *                                      Required Permissions (API Action): route53:ChangeResourceRecordSets
+ *                                      Resources: arn:aws:route53:::hostedzone/hosted zone ID
  *
  * @param String recordType            AWS Route53 record set type, eg: A, CNAME, TXT, etc.
  * @param String hostedZoneId          AWS Route53 hosted zone ID.
  * @param String domainName            AWS Route53 resource record set domain name.
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
+ *
+ * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ *                                     String keys or a List of primitives or Map.
+ * json output:
+ * {
+ *      "ChangeInfo": {
+ *         "Status": "PENDING",
+ *         "Comment": "optional comment about the changes in this change batch request",
+ *         "SubmittedAt": "2018-07-10T19:39:37.757Z",
+ *         "Id": "/change/C3QYC83OA0KX5K"
+ *      }
+ * }
+ *
+ * parseJson(out) == [ChangeInfo:[Status:PENDING, Comment:optional comment about the changes in this change batch request,
+ *                  SubmittedAt:2018-07-10T19:39:37.757Z, Id:/change/C3QYC83OA0KX5K]]
  */
 def changeRecordSet(String action, String recordType, String hostedZoneId, String domainName,
                     String aliasHostedZoneId, String aliasDnsName) {
@@ -138,7 +174,8 @@ def changeRecordSet(String action, String recordType, String hostedZoneId, Strin
   ]
 }
 """
-    String cmd = "aws route53 change-resource-record-sets --hosted-zone-id ${hostedZoneId} --change-batch '${changeBatch}' --output=json"
+    String cmd = "aws route53 change-resource-record-sets --hosted-zone-id ${hostedZoneId}" +
+            " --change-batch '${changeBatch}' --output=json"
     String out = sh(returnStdout: true, script: cmd).trim()
     return parseJson(out)
 }
@@ -152,7 +189,7 @@ def changeRecordSet(String action, String recordType, String hostedZoneId, Strin
  * Reads a file in the current working directory or a String as a plain text JSON file.
  * The returned object is a normal Map with String keys or a List of primitives or Map.
  *
- *Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
+ * Ref Link: https://jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readjson-read-json-from-files-in-the-workspace
  *
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.

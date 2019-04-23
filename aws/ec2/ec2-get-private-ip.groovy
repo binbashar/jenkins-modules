@@ -52,5 +52,6 @@ def call(String ec2_id) {
     return ec2PrivIpAddr
 
 }
+
 // Note: this line is crucial when you want to load an external groovy script
 return this
