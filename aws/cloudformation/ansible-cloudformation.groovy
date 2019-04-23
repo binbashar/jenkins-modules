@@ -7,7 +7,7 @@
  * This module relies on Ansible Jenkins Plugin, plus the ansible installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  *
  ** Function:
  * Execute an Ansible Playbook with --vault-password-file

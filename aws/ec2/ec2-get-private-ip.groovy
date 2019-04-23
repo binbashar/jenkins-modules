@@ -8,7 +8,7 @@
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  *
 
 /*

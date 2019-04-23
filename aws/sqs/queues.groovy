@@ -9,7 +9,7 @@
  *
  * This module handle AWS IAM profile credentials.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  *
  ** Examples:
  * stage ("Delete Queue") {

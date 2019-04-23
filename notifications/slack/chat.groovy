@@ -8,7 +8,7 @@ import groovy.json.JsonSlurper
  ** IMPORTANT:
  * This script relies on HTTP Request Plugin >= v1.8.22
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**

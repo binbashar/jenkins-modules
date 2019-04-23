@@ -12,7 +12,7 @@ import groovy.json.JsonSlurper
  *
  * At this moment this module can only handle values of type String and SecureString.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 

@@ -10,7 +10,7 @@
  * This function depends on Last Changes Plugins, also consider this plugins deps. (https://plugins.jenkins.io/last-changes).
  * Ref link: https://jenkins.io/doc/pipeline/steps/last-changes/
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**

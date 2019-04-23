@@ -31,7 +31,7 @@ node {
     def vaultKv
     def manifestHelper
 
-    // App related imput paramters
+    // App related input paramters
     String appName = params.appName
     String envName = params.envName
 

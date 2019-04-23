@@ -39,7 +39,7 @@
  * Basically, Jenkins will fail when running that function unless the pipeline is not run in a sandbox or until an
  * Admin approves the kind of static access the function needs to do.
  *
- ** This module has to be load as shown in the root context README.md
+ ** This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**

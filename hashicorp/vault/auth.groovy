@@ -12,7 +12,7 @@ import groovy.json.JsonSlurper
  ** IMPORTANT:
  * This module relies heavily on the vault CLI to run.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /*

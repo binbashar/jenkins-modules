@@ -7,7 +7,7 @@
  * This module relies on the AWS CLI to be configured to run without any initial or additional setup.
  * This module DOES NOT handle AWS credentials.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  *
  ** Parameters:
  * @param String elbName            AWS ELB name, eg: my-load-balancer

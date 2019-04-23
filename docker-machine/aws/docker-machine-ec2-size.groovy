@@ -3,7 +3,7 @@
  ** Jenkins Modules:
  * jenkins pipeline AWS EC2 type input parameter selection box.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**
