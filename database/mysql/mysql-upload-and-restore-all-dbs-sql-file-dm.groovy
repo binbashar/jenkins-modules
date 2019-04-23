@@ -12,6 +12,8 @@
  * @param String mysqlRootPass mysql user password (with the necessary permissions) to be passed as parameter in the cli
  * @param String machineName   docker-machine name where the db server host from file will be restored
  * @param String contNameMysql docker mysql container name where the db server host from file will be restored
+ *
+ * @return NO return value. This call will execute the stages declared in this module function.
  */
 def call(String mysqlUser, String mysqlRootPass, String machineName, String contNameMysql) {
 
