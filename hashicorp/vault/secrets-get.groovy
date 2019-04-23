@@ -51,8 +51,11 @@
  * @param String    vaultId     Vault path key, eg: 'secret/dev-mysql'
  * @param ArrayList fieldsList  Groovy ArrayList of secrets provided, eg: ["mysql-database", "mysql-user", "mysql-pass"]
  *
+ * @return secretsBag           Groovy Map with the secrets gotten from vault,
+ *                              eg: [mysql-database:"db_name", mysql-user:"readonly", mysql-pass:"s3cr3t"]
+ *
  ** Examples
- * A) Sample usage from a Pipeline Stage (you must include the function)
+ * A) Sample usage from a Pipeline Stage (you must include the function in the same groovy script)
  *
  *  node {
  *      stage('Vault Secrets Sample') {
@@ -102,7 +105,7 @@ def getSecrets(String vaultId, ArrayList fieldsList) {
     wrap([$class: 'VaultBuildWrapper', vaultSecrets: vaultSecretsConfig]) {
         for (field in fieldsList) {
             String envField = field.replace("-", "_").toUpperCase()
-            // iteration eg secretBag[mysql-database] = env[VAR_MYSQL_DATABASE]
+            // iteration eg: secretBag[mysql-database] = env[VAR_MYSQL_DATABASE]
             secretsBag[field] = env["${envVarPrefix}${envField}"]
         }
     }

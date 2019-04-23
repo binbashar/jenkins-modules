@@ -38,6 +38,9 @@ String vaultAddress = 'https://127.0.0.1:8200'
  *                          This token is passed via HTTP headers.
  *                          ref-link: (https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)
  *
+ * @return Boolean          If vault login method (Githib personal access token) has successfully authenticated return
+ *                          true, if failed for any reason return false.
+ *
  ** Example:
  *  // Set vault address for subsequent method calls
  *  vaultAuth.vaultAddress = vaultAddress
@@ -77,9 +80,12 @@ def login(String token) {
     return false
 }
 
-/*
+/**
  ** Function:
  * Check if you are already logged in -- which means your token is still valid (currently Github token).
+ *
+ ** Parameters:
+ * @return Boolean  If vault login method has successfully authenticated return true, else false.
  *
  ** Example:
  *  // Set vault address for subsequent method calls
@@ -154,14 +160,17 @@ def parseJson(String jsonString) {
     return decodedJson
 }
 
-/*
+/**
  ** Function:
  * Will export String vaultAddress = 'https://127.0.0.1:8200' variable. Since this var needs to be set once if your
  * vault address is different. This is a workaround to avoid having to pass this to every function.
+ *
+ ** Parameters:
+ * @return Exec export OS cmd.
  */
-
 def getExportVaultAddress() {
     return "export VAULT_ADDR=${vaultAddress}"
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this
