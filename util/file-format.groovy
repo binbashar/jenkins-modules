@@ -1,11 +1,22 @@
 #!/usr/bin/env groovy
+
 /*
- * Util Modules: file format helper.
+ ** Util Modules:
+ * File format helper.
+ *
+ ** IMPORTANT:
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
+ *
  */
 
-
-/*
- * Convert a Groovy Map to a YAML-formatted string.
+/**
+ ** Function:
+ * Convert a LinkedHashMap to a YAML-formatted string.
+ *
+ ** Parameters:
+ * @param LinkedHashMap map    Groovy Map, eg:[key1:"value1",key2:"value2"] or [keys:[key1:"value1", key2:"value2"],state:"stateful"]
+ *
+ * @return String YAML-formatted
  */
 def mapToYaml(LinkedHashMap map) {
     String yaml = ""
@@ -22,8 +33,14 @@ def mapToYaml(LinkedHashMap map) {
     return yaml
 }
 
-/*
- * Convert Groovy Map to a JS-formatted string.
+/**
+ ** Function:
+ * Convert LinkedHashMap to a JS-formatted string.
+ *
+ ** Parameters:
+ * @param LinkedHashMap map    Groovy Map, eg:[key1:"value1",key2:"value2"] or [keys:[key1:"value1", key2:"value2"],state:"stateful"]
+ *
+ * @return String JS-formatted
  */
 def mapToJsConfig(LinkedHashMap map) {
     String jsOutput = "module.exports = {\n"
@@ -44,6 +61,15 @@ def mapToJsConfig(LinkedHashMap map) {
     return jsOutput
 }
 
+/**
+ ** Function:
+ * Convert LinkedHashMap to a DotEnv (.env) formatted string.
+ *
+ ** Parameters:
+ * @param LinkedHashMap map    Groovy Map, eg:[key1:"value1",key2:"value2"] or [keys:[key1:"value1", key2:"value2"],state:"stateful"]
+ *
+ * @return String DotEnv (.env) formatted.
+ */
 def mapToDotEnv(LinkedHashMap map) {
     String dotEnv = ""
     map.each { name, value ->
@@ -52,4 +78,5 @@ def mapToDotEnv(LinkedHashMap map) {
     return dotEnv
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

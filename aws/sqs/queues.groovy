@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * AWS Route53 Hosted Zones helper.
@@ -81,7 +82,7 @@ def getQueue(String queueName, String profile = null) {
  *                          Ref Link: https://docs.aws.amazon.com/cli/latest/reference/sqs/set-queue-attributes.html
  * @param String profile    AWS IAM profile
  *
- * @return Groovy Map parseJson(out)    A Map with the created AWS SQS QueueUrl based on the queue name parameter
+ * @return LinkedHashMap parseJson(out)    A Map with the created AWS SQS QueueUrl based on the queue name parameter
  *                                      eg: parseJson(out) == [QueueUrl:'https://queue.amazonaws.com/80398EXAMPLE/MyQueue']
  */
 def createQueue(String queueName, String queueAttr, String profile = null) {
@@ -100,7 +101,7 @@ def createQueue(String queueName, String queueAttr, String profile = null) {
  * @param String queueUrl               AWS SQS queue URL
  * @param String profile                AWS IAM profile name
  *
- * @return Groovy Map parseJson(out)    A Map containing -> [None.]
+ * @return LinkedHashMap parseJson(out)    A Map containing -> [None.]
  */
 def deleteQueue(String queueUrl, String profile = null) {
     return ecrDeleteQueue(queueUrl, profile)
@@ -114,7 +115,7 @@ def deleteQueue(String queueUrl, String profile = null) {
  * @param String queueNamePrefix        AWS SQS queue name
  * @param String profile                AWS IAM profile
  *
- * @return Groovy Map parseJson(out)    A Map with the list of the QueueUrls that match the String queueNamePrefix
+ * @return LinkedHashMap parseJson(out)    A Map with the list of the QueueUrls that match the String queueNamePrefix
  * json output:
  * {
  *   "QueueUrls": [
@@ -149,7 +150,7 @@ def ecrListQueues(String queueNamePrefix, String profile = null) {
  *                                      The following lists the names, descriptions, and values of the special request parameters
  *                                      Ref Link: https://docs.aws.amazon.com/cli/latest/reference/sqs/set-queue-attributes.html
  *
- * @return Groovy Map parseJson(out)    A Map with the created AWS SQS QueueUrl based on the queue name parameter
+ * @return LinkedHashMap parseJson(out)    A Map with the created AWS SQS QueueUrl based on the queue name parameter
  *json output:
  * {
  *  "QueueUrl": "https://queue.amazonaws.com/80398EXAMPLE/MyQueue"
@@ -177,7 +178,7 @@ def ecrCreateQueue(String queueName, String queueAttr, String profile = null) {
  * @param String queueUrl               AWS SQS queue URL
  * @param String profile                AWS IAM profile name
  *
- * @return Groovy Map parseJson(out)    A Map containing -> [None.]
+ * @return LinkedHashMap parseJson(out)    A Map containing -> [None.]
  * Ref link: https://docs.aws.amazon.com/cli/latest/reference/sqs/delete-queue.html
  */
 def ecrDeleteQueue(String queueUrl, String profile = null) {
@@ -206,7 +207,7 @@ def ecrDeleteQueue(String queueUrl, String profile = null) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

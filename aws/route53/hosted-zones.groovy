@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * AWS Route53 Hosted Zones helper.
@@ -93,7 +94,7 @@ def getRecordSet(String hostedZoneId, String domainName) {
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
  *
- * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ * @return LinkedHashMap parseJson(out)   The returned object is LinkedHashMap from a converted json to a normal Map with
  *                                     String keys or a List of primitives or Map.
  *                                     eg: [ChangeInfo:[Status:PENDING, Comment:optional comment about the changes in
  *                                     this change batch request, SubmittedAt:2018-07-10T19:39:37.757Z,
@@ -113,7 +114,7 @@ def createAliasRecordSet(String hostedZoneId, String domainName, String aliasHos
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
  *
- * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ * @return LinkedHashMap parseJson(out)   The returned object is LinkedHashMap from a converted json to a normal Map with
  *                                     String keys or a List of primitives or Map.
  *                                     eg: [ChangeInfo:[Status:PENDING, Comment:optional comment about the changes in
  *                                     this change batch request, SubmittedAt:2018-07-10T19:39:37.757Z,
@@ -139,7 +140,7 @@ def deleteAliasRecordSet(String hostedZoneId, String domainName, String aliasHos
  * @param String aliasHostedZoneId     AWS Route53 alias hosted zone ID.
  * @param String aliasDnsName          AWS Route53 alias resource record set domain name.
  *
- * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ * @return LinkedHashMap parseJson(out)   The returned object is LinkedHashMap from a converted json to a normal Map with
  *                                     String keys or a List of primitives or Map.
  * json output:
  * {
@@ -194,7 +195,7 @@ def changeRecordSet(String action, String recordType, String hostedZoneId, Strin
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

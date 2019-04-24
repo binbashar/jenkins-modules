@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Kubernetes Modules:
  * kubectl basic wrapper.
@@ -76,11 +77,11 @@ def getContext() {
  *                          $kubectl config current-context             # display the current-context
  *                          $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
  *
- * @return podData          Groovy Map containing the 1st K8s podID listed through 'get pods' kubectl cmd as key and
+ * @return podData          LinkedHashMap containing the 1st K8s podID listed through 'get pods' kubectl cmd as key and
  *                          it's status as value.
  *                          Example:
  *                          // Kubectl Cmd: kubectl get pods --context minikube -n spinnaker| grep spin-deck | head -1 | awk '{print $1, $3}'
- *                          Groovy Map returned: [spin-deck-7fb595fdbc-tbdbm:'Running']
+ *                          LinkedHashMap returned: [spin-deck-7fb595fdbc-tbdbm:'Running']
  *                          Possible Pod Status:
  *                          - Pending	The Pod has been accepted by the Kubernetes system, but one or more of the Container images has not been created.
  *                          - Running	The Pod has been bound to a node, and all of the Containers have been created.
@@ -158,13 +159,13 @@ def setContext(String context) {
  *                                  $kubectl config use-context my-cluster-name # set the default context to my-cluster-name
  * @param Integer waitTimeout       Integer value of seconds to wait for a K8s Pod to be in Running state.
  *
- * @return pod                      Groovy Map containing the 1st K8s podID listed through 'get pods' kubectl cmd as key and
+ * @return LinkedHashMap pod        Contains the 1st K8s podID listed through 'get pods' kubectl cmd as key and
  *                                  it's status as value which should be 'Running' after the wait for pod period
  *                                  eg: [spin-deck-7fb595fdbc-tbdbm:'Running']
  */
 def waitForPod(String podPrefix, String namespace, String targetPodStatus = 'Running', Integer waitTimeout = 30,
                String context = null) {
-    // Groovy Map returned by getPod() function. eg: [spin-deck-7fb595fdbc-tbdbm:'Running']
+    // LinkedHashMap returned by getPod() function. eg: [spin-deck-7fb595fdbc-tbdbm:'Running']
     def pod = getPod(podPrefix, namespace, context)
     if (pod.status != targetPodStatus) {
         timeout(time: waitTimeout, unit: 'SECONDS') {

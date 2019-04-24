@@ -1,4 +1,5 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 /*
  ** Jenkins Modules:
@@ -146,7 +147,7 @@ def isLoggedIn() {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

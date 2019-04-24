@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 
 /*
@@ -30,7 +31,7 @@ import groovy.json.JsonSlurper
  *                                  - StringList (NOT YET SUPPORTED)
  *                                  - SecureString
  *
- * @return Groovy Map allParams     Map with a Map containing parameter name and value,
+ * @return LinkedHashMap allParams     Map with a Map containing parameter name and value,
  *                                  eg: [unseal_key_1: 123kjaaskl6763, unseal_key_2:1534j2j2k4j3, unseal_key_3:ssf!$3skl6763]
  *
  ** Examples:
@@ -86,7 +87,7 @@ import groovy.json.JsonSlurper
  *  }
  */
 def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
-    def allParams = [:]
+    LinkedHashMap allParams = [:]
 
     // By default, we'll process String & SecureString if none is provided
     if (paramTypesList.size() == 0) {
@@ -104,7 +105,7 @@ def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
         }
     }
 
-    // It returns a Map [:] with al the parameters
+    // It returns a LinkedHashMap [:] with al the parameters
     return allParams
 }
 
@@ -137,13 +138,13 @@ static def stripParameterPrefix(String paramPrefix, String rawName) {
  * @param boolean   decryptValue    Decrypting values boolean flag, if Type: SecureString exists in the list you'll need
  *                                  to set it to 'true'
  *
- * @return Groovy Map paramValues   A Map with:
+ * @return LinkedHashMap paramValues   A Map with:
  *                                  [paramName1 : 'paramValue1', paramName2 : 'paramValue2', ..., paramNameN : 'paramValueN']
  */
 def getParameterValues(ArrayList paramNames, boolean decryptValue = false) {
-    // [:] is shorthand notation for creating a Map. To add keys and values to it then:
-    // def foo = [bar: 'baz', qux: 'quy']
-    def paramValues = [:]
+    // [:] is shorthand notation for creating a Groovy LinkedHashMap. To add keys and values to it then:
+    // LinkedHashMap foo = [bar: 'baz', qux: 'quy']
+    LinkedHashMap paramValues = [:]
 
     // Note: ssm get-parameters only processes up to 10 items per call
     ArrayList slicedNamesList = sliceList(paramNames, 10)
@@ -383,7 +384,7 @@ static def sliceList(ArrayList list, int sliceSize) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

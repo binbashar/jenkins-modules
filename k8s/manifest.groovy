@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Kubernetes Modules:
  * Build a k8s secret YAML manifest using the given arguments.
@@ -19,17 +20,17 @@
 
 /**
  ** Function:
- * K8s helper function to populate a secret.yml manifest with the proper arguments where a Groovy Map variable
+ * K8s helper function to populate a secret.yml manifest with the proper arguments where a LinkedHashMap variable
  * will have a list of [key1:'value1',key2:'value2',...] secrets that could be retrieved from AWS SSM and
  * Hashicorp Vault KV modules.
  * Ref Link: https://kubernetes.io/docs/concepts/configuration/secret/
  *
  ** Parameters:
- * @param String name       K8s secret name.
- * @param String namespace  K8s namespace where your Pod is deployed.
- * @param Map   secrets     Groovy map with K8s namespace where your Pod is deployed.
+ * @param String name               K8s secret name.
+ * @param String namespace          K8s namespace where your Pod is deployed.
+ * @param LinkedHashMap secrets     LinkedHashMap with K8s namespace where your Pod is deployed.
  *
- * @return String template  It contains the the K8s secret manifest in .yml syntax.
+ * @return String template          It contains the the K8s secret manifest in .yml syntax.
  */
 def buildSecret(String name, String namespace, def secrets = [:]) {
     String secretsYml = ""

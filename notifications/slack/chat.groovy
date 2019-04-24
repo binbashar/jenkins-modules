@@ -1,4 +1,5 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 
 /**
@@ -22,7 +23,7 @@ import groovy.json.JsonSlurper
  * @param String text       Text message
  * @param String threadId   Thread identifier that can be used for starting a thread
  *
- * @return A Groovy map as specified here: https://api.slack.com/methods/chat.postMessage#response
+ * @return A LinkedHashMap as specified here: https://api.slack.com/methods/chat.postMessage#response
  *
  ** Example:
  *  slackResponse = sendMessage('MY-TOKEN', 'notifications', 'First message')

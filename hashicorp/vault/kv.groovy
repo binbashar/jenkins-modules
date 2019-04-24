@@ -1,4 +1,5 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 
 /*
@@ -44,7 +45,7 @@ String vaultAddress = 'https://127.0.0.1:8200'
  ** Parameters:
  * @param String keyPath    Vault key path, eg: 'secret/app/dev'
  *
- * @return Groovy Map parseJson(out)    A Map with the list of keys in a given secret engine. If keyPath does not exists
+ * @return LinkedHashMap parseJson(out)    A Map with the list of keys in a given secret engine. If keyPath does not exists
  *                                      return null.
  */
 def list(String keyPath) {
@@ -96,7 +97,7 @@ def list(String keyPath) {
  ** Parameters:
  * @param String key    Vault key path, eg: 'secret/app/dev'
  *
- * @return Groovy Map parseJson(out)    A Map with the list of keys and it's secret values in a given secret engine.
+ * @return LinkedHashMap parseJson(out)    A Map with the list of keys and it's secret values in a given secret engine.
  *                                      If the key does not exists return an empty Map.
  */
 def get(String key) {
@@ -144,8 +145,8 @@ def get(String key) {
  *      version          3
  *
  ** Parameters:
- * @param   String key  Vault key path, eg: 'secret/app/dev'
- * @param   entriesMap  Groovy Map, eg: [db_user:'readonly', db_pass:'s3cr3t']
+ * @param String key                    Vault key path, eg: 'secret/app/dev'
+ * @param LinkedHashMap entriesMap      eg: [db_user:'readonly', db_pass:'s3cr3t']
  *
  * @return  Boolean     If vault put exec was successfull return true, else for ERROR or empty entriesMap return false.
  */
@@ -194,7 +195,7 @@ def put(String key, def entriesMap) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

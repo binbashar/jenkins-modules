@@ -1,11 +1,22 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 /**
- * Jenkins Module: HTTP get returning RC.
+ ** Jenkins Module:
+ * HTTP get returning RC.
+ *
+ ** IMPORTANT:
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
+ *
  */
 
-/*
+/**
+ ** Function:
+ * This function returns the http response code for a http request
+ *
  ** Parameters:
  * @param String checkUrl   URL to be tested
+ *
+ * @return NO return value. This call will execute the tagReleaseWithLastChanges() function declared in this module.
  *
  ** Examples:
  * A) Sample usage from a Pipeline Stage(you must include the function in the same groovy script)
@@ -22,11 +33,6 @@
  *   HTTPS_REQ = load "https_curl_request.groovy"
  *   def http_response_code = HTTPS_REQ("https://www.myapp.com")
  *   echo "http response code: " + http_response_code
- *
- * /
-
-/*
- * This function returns the http response code for a http request
  */
 def call(String checkUrl){
     // Just perform a GET requst to the provided URL
@@ -39,6 +45,7 @@ def call(String checkUrl){
         return getRC
 
     } catch (e) {
+        echo "[ERROR] Exception: ${e}"
         throw e as Throwable
     }
 }
