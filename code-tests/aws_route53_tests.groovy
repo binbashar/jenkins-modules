@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 // NOTE: File names have '_' instead of '-' because of the issue detailed in the link below:
 // https://stackoverflow.com/questions/36461121/groovy-calling-a-method-with-def-parameter-fails-with-illegal-class-name
 import groovy.json.JsonSlurper

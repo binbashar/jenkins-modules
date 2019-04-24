@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  ** Jenkins Modules:
  * Module to validate if a DNS record currently exists

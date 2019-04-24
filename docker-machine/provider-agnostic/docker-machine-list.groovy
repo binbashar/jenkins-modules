@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * docker-machine list and let the user to interactively choose the machine to work with.

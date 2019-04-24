@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * AWS S3 (Simple Storage Service) helper.
@@ -115,7 +116,7 @@ def s3HeadBucket(String name, profile = null) {
 
 /**
  ** Function:
- * Create bucket with given name, on the given region and return a Groovy Map with the output of the
+ * Create bucket with given name, on the given region and return a LinkedHashMap with the output of the
  * 'aws s3api create-bucket' command.
  *
  *
@@ -124,7 +125,7 @@ def s3HeadBucket(String name, profile = null) {
  * @param String profile                AWS IAM profile name.
  * @param String region                 AWS Region: same as in createBucket()
  *
- * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ * @return LinkedHashMap parseJson(out)   The returned object is LinkedHashMap from a converted json to a normal Map with
  *                                     String keys or a List of primitives or Map.
  *
  ** return Example:
@@ -161,7 +162,7 @@ def s3CreateBucket(String name, String region, profile = null) {
  * @param String profile                AWS IAM profile name.
  * @param String region                 AWS Region: same as in createBucket()
  *
- * @return Groovy Map parseJson(out)   The returned object is Groovy Map from a converted json to a normal Map with
+ * @return LinkedHashMap parseJson(out)   The returned object is LinkedHashMap from a converted json to a normal Map with
  *                                     String keys or a List of primitives or Map.
  *
  * return Example:
@@ -202,7 +203,7 @@ def s3DeleteBucket(String name, String region, profile = null) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(jsonString) {
     def decodedJson = null

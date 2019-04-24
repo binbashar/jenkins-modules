@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  * Jenkins Modules: Update DNS Record on AWS Route53.
  *

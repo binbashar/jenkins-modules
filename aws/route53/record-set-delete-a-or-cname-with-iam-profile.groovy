@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  * Jenkins Modules: Delete DNS Record on AWS Route53.
  *

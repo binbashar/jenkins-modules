@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * AWS allocate EIP and associate to EC2.
