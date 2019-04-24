@@ -20,7 +20,7 @@
 - **Jenkins Shell** all the module functions have been tested under `/bin/bash` GNU/Linux Shell.
 Please consider configuring it from the jenkins UI (`https://your.jenkins.domain.com/configure`)
 <div align="center">
-    <img src="figures/jenkins-shell.png" alt="drawing" width="350"/>
+    <img src="figures/jenkins-shell.png" alt="drawing" width="750"/>
 </div>
 
 Depending on the module you would like to implement different plugins or OS binaries will be needed, such as:
