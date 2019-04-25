@@ -31,7 +31,7 @@ Depending on the module you would like to implement different plugins or OS bina
     - **cloudformation:** 
         - Ansible >= 2.5 (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
         - Ansible Jenkins Plugin (https://wiki.jenkins.io/display/JENKINS/Ansible+Plugin).   
-    - **ec2, ecr, eip, elb, sqs and ssm:**
+    - **ec2, ecr, eip, elb, s3, sqs and ssm:**
         - AWS cli (https://github.com/aws/aws-cli)
     - **elasticbeanstalk:**
         - AWS cli
@@ -43,6 +43,15 @@ Depending on the module you would like to implement different plugins or OS bina
 
 2. ##### database
     - **mysql:**
+         - docker > `18.09` and docker-machine > `0.15.0`
+         ```shell
+            $ docker -v
+            Docker version 18.09.4, build d14af54
+            
+            $ docker-machine -v
+            docker-machine version 0.15.0, build b48dc28d            
+        ``` 
+         - dbHost to be reachable to be configured to run as-is, this module does not handle that.
     - **pgsql:**
     
 3. ##### dns: 
@@ -100,6 +109,8 @@ node {
 
 
 ### USE CASE EXAMPLES
+
+For the actual code examples please refer inside this repo to: https://github.com/binbashar/jenkins-modules/tree/BBL-56-jenkins-mod-docstring-and-format/code-examples
 
 - **Modules:** Slack & AWS SSM Parameter Store helper modules.
 
