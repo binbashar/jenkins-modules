@@ -1,9 +1,10 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * jenkins pipeline GPC VM type input parameter selection box.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**
@@ -16,6 +17,9 @@
  *     parameter(name: 'id', type: 'java.lang.String'), parameter(name: 'ok', type: 'java.lang.String'),
  *     parameter(name: 'parameters', type: 'Map'), parameter(name: 'submitter', type: 'java.lang.String'),
  *     parameter(name: 'submitterParameter', type: 'java.lang.String'), ], doc: 'Wait for interactive input')
+ *
+ ** Parameters:
+ * @return String userInputVmSize  GCP VPM Type: f1-micro, g1-small, n1-standard-1 or n1-standard-2.
  *
  ** Examples:
  *     // Docker Machine AWs Size

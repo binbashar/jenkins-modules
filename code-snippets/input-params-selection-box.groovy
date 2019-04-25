@@ -1,5 +1,4 @@
 def appRepo() {
-
     try {
 
         echo '✈ Choose Application ✅'

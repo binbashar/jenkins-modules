@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  ** Jenkins Modules:
  * Create DNS Record on AWS Route53.
@@ -21,6 +22,8 @@
  * @param String awsRegion                AWS region name
  * @param String dnsRecordSetName       DNS record set name
  * @param String dnsRecordSetValue      DNS record set value
+ *
+ * @return NO return value. This call will execute the stages declared in this module function.
  *
  ** Examples:
  * String rootDir = pwd()

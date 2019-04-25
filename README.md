@@ -17,6 +17,12 @@
 
 - **Core Plugins:** pipeline-build-step, pipeline-stage-step, pipeline-stage-tags-metadata, pipeline-stage-view, pipeline-utility-steps.
 
+- **Jenkins Shell** all the module functions have been tested under `/bin/bash` GNU/Linux Shell.
+Please consider configuring it from the jenkins UI (`https://your.jenkins.domain.com/configure`)
+<div align="center">
+    <img src="figures/jenkins-shell.png" alt="drawing" width="750"/>
+</div>
+
 Depending on the module you would like to implement different plugins or OS binaries will be needed, such as:
 
 #### Specific module deps.
@@ -37,6 +43,7 @@ Depending on the module you would like to implement different plugins or OS bina
 
 2. ##### database
     - **mysql:**
+    - **pgsql:**
     
 3. ##### dns: 
     -  GNU/Linux `nslookup` binary to properly work.
@@ -67,12 +74,14 @@ Depending on the module you would like to implement different plugins or OS bina
 
 14. ##### util
 
+----
 
 ### Devops Groovy Module files import
 - Orig Ref @ https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/load-from-file/pipeline.groovy
 
 ```groovy
 #!/usr/bin/env groovy
+
 
 node {
     // Load the file 'externalMethod.groovy' from the current directory, into a variable called "externalMethod".
@@ -96,6 +105,7 @@ node {
 
 ```groovy
 #!/usr/bin/env groovy
+
 
 node {
     String gitJenkinsModName = 'jenkins_modules'
@@ -157,6 +167,7 @@ node {
 ```groovy
 #!/usr/bin/env groovy
 
+
 node {
     String gitJenkinsModName = 'jenkins_modules'
     String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
@@ -203,6 +214,7 @@ node {
 
 ```groovy
 #!/usr/bin/env groovy
+
 
 node {    
     String gitJenkinsModName = 'jenkins_modules'
@@ -268,6 +280,7 @@ node {
 ```groovy
 #!/usr/bin/env groovy
 
+
 node {
 
     String gitJenkinsModName = 'jenkins_modules'
@@ -316,6 +329,7 @@ node {
 
 ```groovy
 #!/usr/bin/env groovy
+
 
 node {
 
@@ -393,6 +407,7 @@ node {
 ```groovy
 #!/usr/bin/env groovy
 
+
 node {
 
     // Jenkins Modules git checkout variables
@@ -406,7 +421,7 @@ node {
     def vaultKv
     def manifestHelper
 
-    // App related imput paramters
+    // App related input paramters
     String appName = params.appName
     String envName = params.envName
     
@@ -516,6 +531,100 @@ node {
             println "[WARNING] Exception: ${e}"
             currentBuild.result = 'FAILURE'
         }
+    }
+}
+```
+
+- **Module:** Git Helper and Slack Helper modules.
+
+```groovy
+node {
+
+    // Jenkins Modules git checkout variables
+    String gitJenkinsModName = 'jenkins_modules'
+    String gitJenkinsModCredentialsId = 'jenkins_id_rsa'
+    String gitJenkinsModVersionTag = 'v0.0.1'
+    String gitJenkinsModRepoUrl = 'git@github.com:project/jenkins-modules.git'
+
+    // Load modules associated variables
+    def slackHelper
+    def gitHelper
+
+    // Examples related variables
+    String gitCommitId
+    String releaseTagPrefix = "release"
+    String lastChangesDiffMsg = ''
+
+    try {
+        stage ("Check-out Libraries") {
+            dir("${gitJenkinsModName}") {
+                checkout([
+                        $class           : "GitSCM",
+                        branches         : [[name: gitJenkinsModVersionTag]],
+                        userRemoteConfigs: [[
+                            credentialsId: gitJenkinsModCredentialsId,
+                            url: gitJenkinsModRepoUrl
+                        ]]
+                ])
+            }
+
+            slackHelper = load "${gitJenkinsModName}/slack/notification.groovy"
+            gitHelper = load "${gitJenkinsModName}/scm/git.groovy"
+        }
+
+        stage ("Notify Start") {
+            if (params.enableNotifications)
+                slackHelper.sendBuildStatus('STARTED')
+        }
+
+        stage ("Notify Last Changes") {
+            if (params.tagRelease) {
+                String releaseTagFilter = releaseTagPrefix + "_*"
+                String previousDeployCommitHash = gitHelper.getCommitHashByTag(releaseTagFilter)
+                String currentDeployCommitHash = gitCommitId
+
+                if (previousDeployCommitHash != '') {
+                    lastChangesDiffMsg = gitHelper.getDiffMessages(previousDeployCommitHash, currentDeployCommitHash)
+                } else {
+                    lastChangesDiffMsg = 'No Changes Found'
+                }
+
+                // Replace problematic characters in diff message
+                lastChangesDiffMsg = lastChangesDiffMsg.replace('"', '\'')
+
+                println "lastChangesDiffMsg: ${lastChangesDiffMsg}"
+                String previousTagName = gitHelper.getLastTagName(releaseTagFilter)
+                String lastChangesUrl = gitHelper.getRepositoryUrl() + "/compare/${previousTagName}...${currentDeployCommitHash}"
+                String lastChangesMsg = "Last Changes: <${lastChangesUrl}>  ```${lastChangesDiffMsg}```"
+
+                if (params.enableNotifications) {
+                    slackHelper.sendBuildStatus('LAST CHANGES', lastChangesMsg)
+                } else {
+                    println lastChangesMsg
+                }
+            }
+        }
+
+        stage ("Tag Release") {
+            if (params.tagRelease) {                
+                releaseTagPrefix = "release_prod"
+                String tagFilter = "prod"
+                String tagMessage = "Production Release"
+                gitHelper.tagReleaseWithLastChanges(releaseTagPrefix, tagFilter, tagMessage)
+            }
+        }
+
+        stage ("Notify Success") {
+            if (params.enableNotifications)
+                slackHelper.sendBuildStatus('SUCCESS')
+        }
+
+    } catch (e) {
+        if (params.enableNotifications)
+            slackHelper.sendBuildStatus('FAILURE')
+
+        currentBuild.result = "FAILED"
+        throw e
     }
 }
 ```

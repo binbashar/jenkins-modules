@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  ** Jenkins Modules:
  * Module to validate if a DNS record currently exists
@@ -9,7 +10,7 @@
  *      - Debian based pkg: dnsutils
  *      - RHEL/Centos pkg: bind-utils
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /** 
@@ -17,32 +18,34 @@
  * Check if domain name resolves to a valid DNS record entry.
  *
  ** Parameters:
- * @param String dns_record_set_name   Domain name
+ * @param String dnsRecordSetName   Domain name
+ * 
+ * @return Boolean                  true for successful dns domain resolution, false if server can't find domain name.
  * 
  ** Examples:
  *    // We can just run it with "externalCall(...)" since it has a call method.
  *    boolean dnsDomainExists = dnsNslookupHelper(dns_record_set_comment)
  */
 
-def call(String dns_record_set_name) {
-    String lookup_result = ""
+def call(String dnsRecordSetName) {
+    String lookupResult = ""
 
     try {
-        lookup_result = sh(
-            script: "nslookup ${dns_record_set_name} | grep 't find'",
+        lookupResult = sh(
+            script: "nslookup ${dnsRecordSetName} | grep 't find'",
             returnStdout: true
         ).trim()
 
-        echo "[DEBUG] nslookup output: ${lookup_result}"
+        echo "[DEBUG] nslookup output: ${lookupResult}"
 
     } catch (Exception e) {
-        echo "[ERROR] Error while running nslookup with domain=${dns_record_set_name}"
+        echo "[ERROR] Error while running nslookup with domain=${dnsRecordSetName}"
         echo "[ERROR] Exception=${e}"
     }
 
-    // Since the grep expression expects to find the negative case, we test for
-    // an empty string here
-    if (lookup_result == "") {
+    // Since the grep expression expects to find the negative case
+    // eg: server can't find www.binbash.com.ca: NXDOMAIN), we test for an empty string here
+    if (lookupResult == "") {
         return true
     }
     return false

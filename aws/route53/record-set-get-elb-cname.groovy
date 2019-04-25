@@ -1,25 +1,35 @@
 #!/usr/bin/env groovy
+
 /**
- * Jenkins Modules: Get the public record of the given ELB name.
+ ** Jenkins Modules:
+ * Get the public record of the given ELB name.
  *
- * IMPORTANT: this module relies on the AWS CLI to be configured to run without
- * any initial or additional setup. This module DOES NOT handle AWS credentials.
+ * IMPORTANT:
+ * This module relies on the AWS CLI to be configured to run without any initial or additional setup.
+ * This module DOES NOT handle AWS credentials.
  *
- * @param elb_name ELB name
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
+ *
+ ** Parameters:
+ * @param String elbName            AWS ELB name, eg: my-load-balancer
+ *
+ * @return String elbDescribeResult AWS ELB DNSNmame, The DNS name of the load balancer.
+ *                                  eg: my-load-balancer-1234567890.us-west-2.elb.amazonaws.com
  */
 
-def call(elb_name) {
+def call(String elbName) {
     try {
-        elb_describe_result = sh(
-                script: "aws elb describe-load-balancers | grep '\"DNSName\": \"${elb_name}' | cut -d':' -f2 | cut -d'\"' -f2",
+        String elbDescribeResult = sh(
+                script: "aws elb describe-load-balancers " +
+                        "| grep '\"DNSName\": \"${elbName}' | cut -d':' -f2 | cut -d'\"' -f2",
                 returnStdout: true
         ).trim()
 
-        echo "[DEBUG] ELB describe output: ${elb_describe_result}"
-        return elb_describe_result
+        echo "[DEBUG] ELB describe output: ${elbDescribeResult}"
+        return elbDescribeResult
 
     } catch (Exception e) {
-        echo "[ERROR] Error while running elb describe with name=${elb_name}"
+        echo "[ERROR] Error while running elb describe with name=${elbName}"
         echo "[ERROR] Exception: ${e}"
     }
 }

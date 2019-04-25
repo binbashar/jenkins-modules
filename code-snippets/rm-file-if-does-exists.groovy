@@ -1,5 +1,4 @@
 stage ('rm file if it does exists') {
-
     String FILE_PATH = "${AWS_EB_CONFIG_PATH}/config.yml"
 
     // Create a File object representing the file 'A/B'

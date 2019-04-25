@@ -1,4 +1,5 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 
 /*
@@ -18,7 +19,7 @@ import groovy.json.JsonSlurper
  * Ref linK: https://www.vaultproject.io/docs/secrets/index.html
  *
  *
- * B) This module has to be load as shown in the root context README.md
+ * B) This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /*
@@ -32,7 +33,7 @@ String vaultAddress = 'https://127.0.0.1:8200'
 /**
  ** Function:
  * List secrets at the given key value path. The list command lists data from Vault at the given path.
- * This can be used to list keys and it's secrets in a given secret engine (currently only Key/Value SE is supported).
+ * This can be used to list keys in a given secret engine (currently only Key/Value SE is supported).
  *
  * Vault CLI KV Ver1 Example:
  * List the keys and values under the KV secrets engine:
@@ -43,6 +44,9 @@ String vaultAddress = 'https://127.0.0.1:8200'
  *
  ** Parameters:
  * @param String keyPath    Vault key path, eg: 'secret/app/dev'
+ *
+ * @return LinkedHashMap parseJson(out)    A Map with the list of keys in a given secret engine. If keyPath does not exists
+ *                                      return null.
  */
 def list(String keyPath) {
     try {
@@ -92,6 +96,9 @@ def list(String keyPath) {
  *
  ** Parameters:
  * @param String key    Vault key path, eg: 'secret/app/dev'
+ *
+ * @return LinkedHashMap parseJson(out)    A Map with the list of keys and it's secret values in a given secret engine.
+ *                                      If the key does not exists return an empty Map.
  */
 def get(String key) {
     try {
@@ -138,8 +145,10 @@ def get(String key) {
  *      version          3
  *
  ** Parameters:
- * @param   String key  Vault key path, eg: 'secret/app/dev'
- * @param   entriesMap  Groovy Map, eg: [db_user:'readonly', db_pass:'s3cr3t']
+ * @param String key                    Vault key path, eg: 'secret/app/dev'
+ * @param LinkedHashMap entriesMap      eg: [db_user:'readonly', db_pass:'s3cr3t']
+ *
+ * @return  Boolean     If vault put exec was successfull return true, else for ERROR or empty entriesMap return false.
  */
 def put(String key, def entriesMap) {
     if (entriesMap.size() <= 0)
@@ -186,7 +195,7 @@ def put(String key, def entriesMap) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null
@@ -204,4 +213,5 @@ def getExportVaultAddress() {
     return "export VAULT_ADDR=${vaultAddress}"
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 
 /*
@@ -12,7 +13,7 @@ import groovy.json.JsonSlurper
  *
  * At this moment this module can only handle values of type String and SecureString.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 
@@ -29,6 +30,9 @@ import groovy.json.JsonSlurper
  *                                  - String
  *                                  - StringList (NOT YET SUPPORTED)
  *                                  - SecureString
+ *
+ * @return LinkedHashMap allParams     Map with a Map containing parameter name and value,
+ *                                  eg: [unseal_key_1: 123kjaaskl6763, unseal_key_2:1534j2j2k4j3, unseal_key_3:ssf!$3skl6763]
  *
  ** Examples:
  *  A)
@@ -83,7 +87,7 @@ import groovy.json.JsonSlurper
  *  }
  */
 def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
-    def allParams = [:]
+    LinkedHashMap allParams = [:]
 
     // By default, we'll process String & SecureString if none is provided
     if (paramTypesList.size() == 0) {
@@ -101,7 +105,7 @@ def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
         }
     }
 
-    // It returns a Map [:] with al the parameters
+    // It returns a LinkedHashMap [:] with al the parameters
     return allParams
 }
 
@@ -110,13 +114,15 @@ def getParameters(String paramPrefix, ArrayList paramTypesList = []) {
  * Get parameter name without prefix.
  *
  * NOTE: static def functionName
- * Methods which may safely be made static . A method may be static if it is not  synchronized, it does not reference
+ * Methods which may safely be made static . A method may be static if it is not synchronized, it does not reference
  * any of its class' non static methods and non static fields and is not overridden
  * in a sub class.
  *
  ** Parameters:
  * @param String paramPrefix    AWS SSM parameter prefix, eg: '/app/env/'
  * @param String rawName        Parameter value without prefix.
+ *
+ * @return String rawName       parameter name without prefix. eg: '/app/env/db_pass' to 'db_pass'
  */
 static def stripParameterPrefix(String paramPrefix, String rawName) {
     return rawName.replaceAll(paramPrefix, '')
@@ -131,14 +137,17 @@ static def stripParameterPrefix(String paramPrefix, String rawName) {
  * @param ArrayList paramNames      AWS SSM parameters list
  * @param boolean   decryptValue    Decrypting values boolean flag, if Type: SecureString exists in the list you'll need
  *                                  to set it to 'true'
+ *
+ * @return LinkedHashMap paramValues   A Map with:
+ *                                  [paramName1 : 'paramValue1', paramName2 : 'paramValue2', ..., paramNameN : 'paramValueN']
  */
 def getParameterValues(ArrayList paramNames, boolean decryptValue = false) {
-    // [:] is shorthand notation for creating a Map. To add keys and values to it then:
-    // def foo = [bar: 'baz', qux: 'quy']
-    def paramValues = [:]
+    // [:] is shorthand notation for creating a Groovy LinkedHashMap. To add keys and values to it then:
+    // LinkedHashMap foo = [bar: 'baz', qux: 'quy']
+    LinkedHashMap paramValues = [:]
 
     // Note: ssm get-parameters only processes up to 10 items per call
-    def slicedNamesList = sliceList(paramNames, 10)
+    ArrayList slicedNamesList = sliceList(paramNames, 10)
 
     // Process each slice of names in order to get their corresponding values
     for (namesSlice in slicedNamesList) {
@@ -155,7 +164,6 @@ def getParameterValues(ArrayList paramNames, boolean decryptValue = false) {
         }
     }
 
-    // returns a Map with [paramName1 : 'paramValue1', paramName2 : 'paramValue2', ..., paramNameN : 'paramValueN']
     return paramValues
 }
 
@@ -172,6 +180,23 @@ def getParameterValues(ArrayList paramNames, boolean decryptValue = false) {
  *                                  Return decrypted secure string value. Return decrypted values for secure string
  *                                  parameters. This flag is ignored for String and StringList parameter types.
  *                                  Ref Link: https://docs.aws.amazon.com/cli/latest/reference/ssm/get-parameters.html
+ *
+ * @return String paramValues       String containing a json with the AWS SSM Parameters key and values.
+ *
+ * Command:
+ * aws ssm get-parameters --names key1 key2 --query "Parameters[*].{Name:Name,Value:Value}"
+ * Output json:
+ *
+ * [
+ *   {
+ *       "Name": "key1",
+ *       "Value": "value1"
+ *   },
+ *   {
+ *       "Name": "key2",
+ *       "Value": "val"
+ *   }
+ * ]
  */
 def ssmGetParameters(String names, boolean decryptValue = false) {
     String ssmCmd = "aws ssm get-parameters --names ${names}" +
@@ -199,9 +224,12 @@ def ssmGetParameters(String names, boolean decryptValue = false) {
  *                                  Possible supported values:
  *                                  - String
  *                                  - SecureString
+ *
+ * @return ArrayList paramsList    ArrayList with the AWS SSM parameters name (not it's value)
+ *                                 eg: [unseal_key_1, unseal_key_2, unseal_key_3]
  */
 def getParameterNames(String paramPrefix, String paramType) {
-    def paramsList = []
+    ArrayList paramsList = []
     def rawOutput = ssmDescribeParameter(paramPrefix, paramType)
 
     if (rawOutput != "" && rawOutput != null) {
@@ -215,7 +243,6 @@ def getParameterNames(String paramPrefix, String paramType) {
         }
     }
 
-    // Returns an ArrayList with the AWS SSM parameters name (not it's value)
     return paramsList
 }
 
@@ -252,6 +279,25 @@ def getParameterNames(String paramPrefix, String paramType) {
  *                                  - String
  *                                  - SecureString
  *
+ * @return String   cmdOutput       String containing the json with the parameters details.
+ *
+ * json output:
+ * {
+ *   "Parameters": [
+ *       {
+ *           "LastModifiedUser": "arn:aws:iam::809632081692:user/admin",
+ *           "LastModifiedDate": 1487880325.324,
+ *           "Type": "SecureString",
+ *           "Name": "/app/env/db_pass_root"
+ *       },
+ *       {
+ *           "LastModifiedUser": "arn:aws:iam::809632081692:user/admin",
+ *           "LastModifiedDate": 1487880325.324,
+ *           "Type": "SecureString",
+ *           "Name": "/app/env/db_pass_user"
+ *       }
+ *   ]
+ * }
  */
 def ssmDescribeParameter(String paramPrefix, String paramType) {
     String ssmCmd = "aws ssm describe-parameters" +
@@ -275,6 +321,8 @@ def ssmDescribeParameter(String paramPrefix, String paramType) {
  *
  ** Parameters:
  * @param ArrayList params  List of parameters
+ *
+ * @return String names     AWS SSM parameter Name
  */
 static def joinParams(ArrayList params) {
     String names = ""
@@ -294,13 +342,14 @@ static def joinParams(ArrayList params) {
  * in a sub class.
  *
  ** Parameters:
- * @param ArrayList list        Groovy ArrayList for our use case it will contain the AWS SSM parameters names
- * @param int       sliceSize   Integer to slite the ArrayList considering our use-case where ssm get-parameters only
- *                              processes up to 10 items per call
+ * @param ArrayList list            Groovy ArrayList for our use case it will contain the AWS SSM parameters names
+ * @param int       sliceSize       Integer to slice the ArrayList considering our use-case where ssm get-parameters only
+ *                                  processes up to 10 items per call
  *
+ * @return ArrayList listOfSlices   return a list slice with max 10 items
  */
 static def sliceList(ArrayList list, int sliceSize) {
-    def listOfSlices = []
+    ArrayList listOfSlices = []
 
     def slice = []
     int listSize = list.size()
@@ -335,7 +384,7 @@ static def sliceList(ArrayList list, int sliceSize) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null

@@ -1,90 +1,113 @@
 #!/usr/bin/env groovy
+
 /*
- * Jenkins Modules: Passbolt selection box input parameters module.
+ ** Jenkins Modules:
+ * Passbolt selection box input parameters module.
  *
- * IMPORTANT: this module relies docker and docker-machine installed in the current jenkins server to be configured to
- * run as-is, this module does not handle that.
+ ** IMPORTANT:
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
-String passboltUserType = ""
-String passboltUserEmail = ""
-String passboltUserName = ""
-String passboltUserLastname = ""
-
-def call() {
-
+/**
+ ** Function:
+ *  Jenkins pipeline input user type from combo-box (ChoiceParameterDefinition class).
+ *
+ ** Parameters:
+ *  @return String passboltUserType      passbolt user type: 'user' or 'admin'.
+ */
+def inputPassboltUserType() {
     try {
-        stage('\u2708 Choose Passbolt User Type\u2705') {
-            passboltUserType = input(
+            String passboltUserType = input(
                     id: 'passboltUserType', message: 'Select Passbolt user type', ok: 'Submit', parameters: [
-                    [$class: 'ChoiceParameterDefinition', choices: 'user\nadmin', description: 'Passbolt User', name: 'target']
+                    [$class: 'ChoiceParameterDefinition',
+                     choices: 'user\nadmin',
+                     description: 'Passbolt User',
+                     name: 'target']
             ])
-        }
+            echo("Passbolt user type: ${passboltUserType}")
+            return passboltUserType
 
-        stage('\u2708 Type Passbolt User email\u2705') {
-
-            passboltUserEmail = input(
-                    id: 'passboltUserEmail', message: "Please type passbolt user email user@domain.com:", parameters: [
-                    [$class: 'TextParameterDefinition', defaultValue: '', description: 'Passbolt user email', name: 'passbolt_user@email.com']
-            ])
-            echo("Passbolt user email: ${passboltUserEmail}")
-        }
-
-        stage('\u2708 Type Passbolt User name\u2705') {
-
-            passboltUserName = input(
-                    id: 'passboltUserName', message: "Please type passbolt user name eg: John", parameters: [
-                    [$class: 'TextParameterDefinition', defaultValue: '', description: 'Passbolt user name', name: 'passboltUserName']
-            ])
-            echo("Passbolt user email: ${passboltUserName}")
-        }
-
-        stage('\u2708 Type Passbolt User lastname\u2705') {
-
-            passboltUserLastname = input(
-                    id: 'passboltUserLastname', message: "Please type passbolt user lastname eg Doe:", parameters: [
-                    [$class: 'TextParameterDefinition', defaultValue: '', description: 'Passbolt user lastname', name: 'passboltUserLastname']
-            ])
-            echo("Passbolt user email: ${passboltUserLastname}")
-        }
     } catch (e) {
+        echo "[ERROR] Exception: ${e}"
         throw e as Throwable
     }
 }
 
-return this
-
-def returnPassboltUserType() {
+/**
+ ** Function:
+ *  Jenkins pipeline input user email from combo-box (ChoiceParameterDefinition class).
+ *
+ ** Parameters:
+ *  @return String passboltUserEmail    passbolt user email eg: 'name.lastname@binbash.com.ar'
+ */
+def inputPassboltUserEmail() {
     try {
-        return passboltUserType
-    } catch (e) {
-        throw e as Throwable
-    }
-}
-
-def returnPassboltUserEmail() {
-    try {
+        String passboltUserEmail = input(
+                id: 'passboltUserEmail', message: "Please type passbolt user email user@domain.com:", parameters: [
+                [$class: 'TextParameterDefinition',
+                 defaultValue: '',
+                 description: 'Passbolt user email',
+                 name: 'passbolt_user@email.com']
+        ])
+        echo("Passbolt user email: ${passboltUserEmail}")
         return passboltUserEmail
+
     } catch (e) {
+        echo "[ERROR] Exception: ${e}"
         throw e as Throwable
     }
 }
 
-def returnPassboltUserName() {
+/**
+ ** Function:
+ *  Jenkins pipeline input user name from combo-box (ChoiceParameterDefinition class).
+ *
+ ** Parameters:
+ *  @return String passboltUserName      passbolt user 1st name eg: 'FirstName'
+ */
+def inputPassboltUserName() {
     try {
+        String passboltUserName = input(
+                id: 'passboltUserName', message: "Please type passbolt user name eg: John", parameters: [
+                [$class: 'TextParameterDefinition',
+                 defaultValue: '',
+                 description: 'Passbolt user name',
+                 name: 'passboltUserName']
+        ])
+        echo("Passbolt user email: ${passboltUserName}")
         return passboltUserName
-    } catch (e) {
-        throw e as Throwable
 
+    } catch (e) {
+        echo "[ERROR] Exception: ${e}"
+        throw e as Throwable
     }
 }
 
-def returnPassboltUserLastname() {
+/**
+ ** Function:
+ *  Jenkins pipeline input last name from combo-box (ChoiceParameterDefinition class).
+ *
+ ** Parameters:
+ *  @return String passboltUserLastname      passbolt user lastname eg: 'LastName'.
+ */
+def inputPassboltUserLastName() {
     try {
+        String passboltUserLastname = input(
+                id: 'passboltUserLastname', message: "Please type passbolt user lastname eg Doe:", parameters: [
+                [$class: 'TextParameterDefinition',
+                 defaultValue: '',
+                 description: 'Passbolt user lastname',
+                 name: 'passboltUserLastname']
+        ])
+        echo("Passbolt user email: ${passboltUserLastname}")
         return passboltUserLastname
-    } catch (e) {
-        throw e as Throwable
 
+    } catch (e) {
+        echo "[ERROR] Exception: ${e}"
+        throw e as Throwable
     }
 }
+
+// Note: this line is crucial when you want to load an external groovy script
+return this
 

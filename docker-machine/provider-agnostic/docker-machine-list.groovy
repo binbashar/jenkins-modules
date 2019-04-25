@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * docker-machine list and let the user to interactively choose the machine to work with.
@@ -7,7 +8,7 @@
  * This module relies on docker and docker-machine, installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**
@@ -16,7 +17,9 @@
  * interactively choose the docker-machine to work with afterwards returning the docker-machine name.
  *
  ** Parameters:
- * @param String projectName    Project name (or custom string) to filter the docker-machine ls output.
+ * @param String projectName                    Project name (or custom string) to filter the docker-machine ls output.
+ *
+ * @return String userInputDockerMachineName    Docker Machine Name
  *
  ** Examples:
  *  dockerMachineName = dockerMachineHelper.getDmNameInteractively("py-flask-app")

@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * docker-machine create with AWS drivers
@@ -7,7 +8,7 @@
  * This module relies on docker and docker-machine, installed in the current jenkins server
  * to be configured to run as-is, this module does not handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
  /**
@@ -27,6 +28,8 @@
   * @param String       ec2AmiId                --amazonec2-ami: The AMI ID of the instance to use.
   * @param Boolean      publicIpAddr            --amazonec2-use-private-address: Use the private IP address for docker-machine,
   *                                             but still create a public IP address.
+  *
+  * @return NO return value. This call will execute the stages declared in this module function.
   *
   ** Examples:
   *     // Getting AWS SSM (getStringValueWprofile Function has been deprecated - so take it just as an example)

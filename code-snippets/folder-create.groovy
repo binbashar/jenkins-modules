@@ -1,5 +1,4 @@
 stage ('create folder if it does not exists') {
-
     String FOLDER_PATH = "/your/absolute/path/here"
 
     // Create a File object representing the folder 'A/B'

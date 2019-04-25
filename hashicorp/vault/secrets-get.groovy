@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * Vault Key/Value get secrets helper module.
@@ -39,7 +40,7 @@
  * Basically, Jenkins will fail when running that function unless the pipeline is not run in a sandbox or until an
  * Admin approves the kind of static access the function needs to do.
  *
- ** This module has to be load as shown in the root context README.md
+ ** This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /**
@@ -48,15 +49,18 @@
  * stored in the vault identified by the given vaultId (vault key path).
  *
  ** Parameters:
- * @param String    vaultId     Vault path key, eg: 'secret/dev-mysql'
- * @param ArrayList fieldsList  Groovy ArrayList of secrets provided, eg: ["mysql-database", "mysql-user", "mysql-pass"]
+ * @param String    vaultId             Vault path key, eg: 'secret/dev-mysql'
+ * @param ArrayList fieldsList          Groovy ArrayList of secrets provided, eg: ["mysql-database", "mysql-user", "mysql-pass"]
+ *
+ * @return LinkedHashMap secretsBag     Contains the secrets gotten from vault,
+ *                                      eg: [mysql-database:"db_name", mysql-user:"readonly", mysql-pass:"s3cr3t"]
  *
  ** Examples
- * A) Sample usage from a Pipeline Stage (you must include the function)
+ * A) Sample usage from a Pipeline Stage (you must include the function in the same groovy script)
  *
  *  node {
  *      stage('Vault Secrets Sample') {
- *          def secrets = [:]
+ *          LinkedHashMap secrets = [:]
  *          secrets = getSecrets("secret/dev-mysql", ["mysql-database", "mysql-user", "mysql-pass"])
  *          print "mysql-database: " + secrets['mysql-database']
  *          print "mysql-user: " + secrets['mysql-user']
@@ -67,7 +71,7 @@
  *  B) Sample usage as a loaded groovy script
  *
  *   MY_VAULT_SCRIPT = load "jenkins_pipeline-secrets_get.groovy"
- *   def secrets = [:]
+ *   LinkedHashMap secrets = [:]
  *   secrets = MY_VAULT_SCRIPT.getSecrets("secret/dev-mysql", ["mysql-database", "mysql-user", "mysql-pass"])
  *   print "mysql-database: " + secrets['mysql-database']
  *   print "mysql-user: " + secrets['mysql-user']
@@ -97,12 +101,12 @@ def getSecrets(String vaultId, ArrayList fieldsList) {
     }
     
     // Read the list of secrets via plugin from the configured vaultSecretsConfig vault and making use of the
-    // VaultBuildWrapper class fill a Groovy Map to be returned
-    def secretsBag = [:]
+    // VaultBuildWrapper class fill a LinkedHashMap to be returned
+    LinkedHashMap secretsBag = [:]
     wrap([$class: 'VaultBuildWrapper', vaultSecrets: vaultSecretsConfig]) {
         for (field in fieldsList) {
             String envField = field.replace("-", "_").toUpperCase()
-            // iteration eg secretBag[mysql-database] = env[VAR_MYSQL_DATABASE]
+            // iteration eg: secretBag[mysql-database] = env[VAR_MYSQL_DATABASE]
             secretsBag[field] = env["${envVarPrefix}${envField}"]
         }
     }

@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  ** Jenkins Modules:
  * AWS EC2 get ip address.
@@ -8,7 +9,7 @@
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  *
 
 /*
@@ -52,5 +53,6 @@ def call(String ec2_id) {
     return ec2PrivIpAddr
 
 }
+
 // Note: this line is crucial when you want to load an external groovy script
 return this

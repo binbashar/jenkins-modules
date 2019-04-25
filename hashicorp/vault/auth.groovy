@@ -1,4 +1,5 @@
-#! /usr/bin/groovy
+#!/usr/bin/env groovy
+
 import groovy.json.JsonSlurper
 /*
  ** Jenkins Modules:
@@ -12,7 +13,7 @@ import groovy.json.JsonSlurper
  ** IMPORTANT:
  * This module relies heavily on the vault CLI to run.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /*
@@ -37,6 +38,9 @@ String vaultAddress = 'https://127.0.0.1:8200'
  *                          to verify the identity of the client and to enforce the applicable ACL policies.
  *                          This token is passed via HTTP headers.
  *                          ref-link: (https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)
+ *
+ * @return Boolean          If vault login method (Githib personal access token) has successfully authenticated return
+ *                          true, if failed for any reason return false.
  *
  ** Example:
  *  // Set vault address for subsequent method calls
@@ -77,9 +81,12 @@ def login(String token) {
     return false
 }
 
-/*
+/**
  ** Function:
  * Check if you are already logged in -- which means your token is still valid (currently Github token).
+ *
+ ** Parameters:
+ * @return Boolean  If vault login method has successfully authenticated return true, else false.
  *
  ** Example:
  *  // Set vault address for subsequent method calls
@@ -140,7 +147,7 @@ def isLoggedIn() {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null
@@ -154,14 +161,17 @@ def parseJson(String jsonString) {
     return decodedJson
 }
 
-/*
+/**
  ** Function:
  * Will export String vaultAddress = 'https://127.0.0.1:8200' variable. Since this var needs to be set once if your
  * vault address is different. This is a workaround to avoid having to pass this to every function.
+ *
+ ** Parameters:
+ * @return Exec export OS cmd.
  */
-
 def getExportVaultAddress() {
     return "export VAULT_ADDR=${vaultAddress}"
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

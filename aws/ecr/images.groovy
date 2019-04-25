@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /*
  ** Jenkins Modules:
  * AWS ECR helper.
@@ -8,7 +9,7 @@
  * (either via AWS EC2 Roles or AWS default credentials), this module does not
  * handle that.
  *
- * This module has to be load as shown in the root context README.md
+ * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
  */
 
 /*
@@ -67,7 +68,7 @@ def getImagesByPrefix(repositoryName, imagePrefix) {
  * @param String      repositoryName    AWS ECR repository name
  * @param ArrayList   imagesList        AWS ECR image-names list
  *
- * @return Groovy Map from a call to ecrDeleteImages() function
+ * @return LinkedHashMap from a call to ecrDeleteImages() function
  */
 def deleteImages(String repositoryName, ArrayList imagesList) {
     def imageIds = []
@@ -87,7 +88,7 @@ def deleteImages(String repositoryName, ArrayList imagesList) {
  * @param ArrayList imageIds         AWS ECR list of image ID references that correspond to images to delete.
  *                                   The format of the imageIds reference is imageTag=tag or imageDigest=digest.
  *
- * @return Groovy Map with the output of the 'aws ecr batch-delete-image' aws cli command
+ * @return LinkedHashMap with the output of the 'aws ecr batch-delete-image' aws cli command
  *
  * eg:
  * Deletes an image with the tag precise in a repository called ubuntu in the default registry for an account.
@@ -119,12 +120,12 @@ def ecrDeleteImages(String repositoryName, ArrayList imageIds) {
  *  Get all images in the given AWS ECR repo.
  *
  ** Parameters:
- * @param repositoryName   AWS ECR repository name
+ * @param String repositoryName   AWS ECR repository name
  *
- * @return Groovy Map with the list of image IDs for the requested AWS ECR repository.
+ * @return LinkedHashMap with the list of image IDs for the requested AWS ECR repository.
  * Ref Link: https://docs.aws.amazon.com/cli/latest/reference/ecr/list-images.html
  */
-def ecrGetImages(repositoryName) {
+def ecrGetImages(String repositoryName) {
     String cmd = "aws ecr list-images" +
         " --repository ${repositoryName}" +
         " --output=json"
@@ -151,7 +152,7 @@ def ecrGetImages(repositoryName) {
  ** Parameters:
  * @param String jsonString    A string containing the JSON formatted data. Data could be access as an array or a map.
  *
- * @return Groovy Map decodedJson
+ * @return LinkedHashMap decodedJson
  */
 def parseJson(String jsonString) {
     def decodedJson = null
@@ -164,4 +165,5 @@ def parseJson(String jsonString) {
     return decodedJson
 }
 
+// Note: this line is crucial when you want to load an external groovy script
 return this

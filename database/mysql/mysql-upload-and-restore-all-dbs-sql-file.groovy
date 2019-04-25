@@ -1,4 +1,5 @@
 #!/usr/bin/env groovy
+
 /**
  ** Jenkins Modules:
  * Mysql restore database from uploaded file.
@@ -11,6 +12,8 @@
  * @param String mysqlUser     mysql user to be passed as parameter in the cli
  * @param String mysqlRootPass mysql user password (with the necessary permissions) to be passed as parameter in the cli
  * @param String dbHost        mysql db server host where the db from file will be restored
+ *
+ * @return NO return value. This call will execute the stages declared in this module function.
  */
 def call(String mysqlUser, String mysqlRootPass, String dbHost) {
 
