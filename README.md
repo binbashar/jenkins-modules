@@ -7,6 +7,8 @@
 
 # DevOps Jenkins Modules
 
+![GitHub language count](https://img.shields.io/github/languages/count/binbashar/jenkins-modules.svg)
+
 ### Pre-requisites 
 
 #### Cross module deps.
@@ -42,17 +44,26 @@ Depending on the module you would like to implement different plugins or OS bina
         - Python libraries: `fabric <= 1.14.1`, `boto3`, `pyOpenSSL` and `decorator`. 
 
 2. ##### database
-    - **mysql:**
-         - docker > `18.09` and docker-machine > `0.15.0`
+    - **mysql:** 
+         - `mysql client` binary for you current Mysql Server Engine version (5.6, 5.7, 8.0, etc)  (https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing)   
+         - dbHost to be reachable to be configured to run as-is, this module does not handle that.    
+         
+         If you're using the MySQL docker-machine modules in addition to the above pre-reqs, the following must be installed in your Jenkins Server:
+         - docker > `18.09` (https://docs.docker.com/install/)
          ```shell
             $ docker -v
             Docker version 18.09.4, build d14af54
-            
+         ```
+         - docker-machine > `0.15.0` (https://docs.docker.com/machine/install-machine/)
+         ```   
             $ docker-machine -v
             docker-machine version 0.15.0, build b48dc28d            
-        ``` 
-         - dbHost to be reachable to be configured to run as-is, this module does not handle that.
+         ```
+         
     - **pgsql:**
+         - python >= `3.7` (consider dockerized approach: https://hub.docker.com/_/python). 
+         - Run: `pip3 install -r database/pgsql/requirements.txt`
+         - Database Server (`--dbhost`) to be reachable to be configured to run as-is, this module does not handle that. 
     
 3. ##### dns: 
     -  GNU/Linux `nslookup` binary to properly work.
