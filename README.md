@@ -134,6 +134,7 @@ Depending on the module you would like to implement different plugins or OS bina
 
 ----
 
+## Usage
 ### Devops Groovy Module files import
 - Orig Ref @ https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/load-from-file/pipeline.groovy
 
@@ -155,7 +156,6 @@ node {
     externalCall("Steve")
 }
 ```
-
 
 ### USE CASE EXAMPLES
 
