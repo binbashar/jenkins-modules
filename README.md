@@ -11,6 +11,7 @@
 
 #### Cross module deps.
 - **Jenkins Server** >= 2.160 (https://jenkins.io/changelog/)
+    - For testing this modules locally please consider using our public **Docker Hub** image `binbash/jenkins` accessible through this link: https://cloud.docker.com/u/binbash/repository/docker/binbash/jenkins
     - This modules have been mostly tested on Jenkins under the following operating systems:\
       Ubuntu 14.04 and 16.04.\
       **NOTE:** There is a good chance it will work on other flavors of Debian, CentOS, and RHEL as well.
@@ -44,6 +45,7 @@ Depending on the module you would like to implement different plugins or OS bina
 2. ##### database
     - **mysql:** 
          - `mysql client` binary for you current Mysql Server Engine version (5.6, 5.7, 8.0, etc)  (https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing)   
+            - Please consider using our public **Docker Hub** image `binbash/mysql-client`: https://cloud.docker.com/u/binbash/repository/docker/binbash/mysql-client 
          - dbHost to be reachable to be configured to run as-is, this module does not handle that.    
          
          If you're using the MySQL docker-machine modules in addition to the above pre-reqs, the following must be installed in your Jenkins Server:
@@ -59,7 +61,7 @@ Depending on the module you would like to implement different plugins or OS bina
          ```
          
     - **pgsql:**
-         - python >= `3.7` (consider dockerized approach: https://hub.docker.com/_/python). 
+         - python >= `3.7` (consider dockerized approach: https://hub.docker.com/r/jbergknoff/postgresql-client/dockerfile). 
          - Run: `pip3 install -r database/pgsql/requirements.txt`
          - Database Server (`--dbhost`) to be reachable to be configured to run as-is, this module does not handle that. 
     
@@ -69,28 +71,66 @@ Depending on the module you would like to implement different plugins or OS bina
        - RHEL/Centos pkg: `bind-utils`
        
 4. ##### docker-machine:
+    - docker > `18.09` (https://docs.docker.com/install/)
+      ```shell
+         $ docker -v
+         Docker version 18.09.4, build d14af54
+      ```
+    - docker-machine > `0.15.0` (https://docs.docker.com/machine/install-machine/)
+      ```   
+         $ docker-machine -v
+         docker-machine version 0.15.0, build b48dc28d            
+      ```
 
 5. ##### hashicorp
     - vault
+        -  **auth / kv:** This modules relies heavily on the `vault CLI >v1.0.0` to run.
+        -  **auth:** IMPORTANT - only Github auth is supported, so your Github Personal Access Token should be passed to this.
+        -  **secrets-get:** This module relies heavily on the HashiCorp Vault Plugin (https://wiki.jenkins.io/display/JENKINS/HashiCorp+Vault+Plugin)
 
 6. ##### k8s
+    - This module relies on the `kubectl` CLI to be properly configured and ready to use.
+    - `kubectl` will depend or you K8s API version (https://github.com/kubernetes/kubernetes/releases)
+    - **Dev Notes:** *The main point of this module is to help reduce code repetition and to provide an interface that is more friendly than that of Jenkins Shell plugin. This module DOES NOT attempt to become an exhaustive helper that provides support to all kubectl commands/subcommands as that would become hard to maintain rather easily.* 
 
 7. ##### notifications
     - slack
+        - This module code relies on HTTP Request Plugin >= v1.8.22.
+        - This module functions depends on **Slack Notification Plugin**, also consider this plugins deps. (https://plugins.jenkins.io/slack).
+            - Ref link: https://jenkins.io/doc/pipeline/steps/slack/
+        - This module functions depends on **Last Changes Plugins**, also consider this plugins deps. (https://plugins.jenkins.io/last-changes).
+            - Ref link: https://jenkins.io/doc/pipeline/steps/last-changes/
 
 8. ##### passbolt
+    - This module relies docker and docker-machine installed in the current jenkins server to be configured to run as-is, this module does not handle that.
+        - docker > `18.09` (https://docs.docker.com/install/)
+          ```shell
+             $ docker -v
+             Docker version 18.09.4, build d14af54
+          ```
+        - docker-machine > `0.15.0` (https://docs.docker.com/machine/install-machine/)
+          ```   
+             $ docker-machine -v
+             docker-machine version 0.15.0, build b48dc28d            
+          ```
+    - This module also expects a dockerized passbolt server running (https://hub.docker.com/r/passbolt/passbolt/)
 
 9. ##### php
-
+    - This module relies on the proper versions of `phpcpd` and `phpmd`, as well as plugins **PmdPublisher** and **DryPublisher** installed in the current jenkins server to be configured to run as-is, this module does not handle that.
+       
 10. ##### python
+    - Python libraries: check `/python/requirements.txt`
+    - fabric <= 1.14.1`, `boto3`, `termcolor` and `dyn`. 
 
 11. ##### scm
+    - git 
+        - Most of these functions work on the current directory and will work based on the assumption that there is a `git` local repository set up and of course the `git` binary.
 
-12. ##### src
+12. ##### test
+    - No extra deps apart from the before presented **Cross module deps**.
 
-13. ##### test
-
-14. ##### util
+13. ##### util
+    - No extra deps apart from the before presented **Cross module deps**.
 
 ----
 
