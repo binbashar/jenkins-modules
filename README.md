@@ -40,7 +40,7 @@ Depending on the module you would like to implement different plugins or OS bina
     - **route53:**
         - AWS cli
         - GNU/Linux pkgs `libssl-dev`, `python-dev`, `python-pip` and `python2.7`
-        - Python libraries: `fabric <= 1.14.1`, `boto3`, `pyOpenSSL` and `decorator`. 
+        - Python libraries please check `/python/requirements.txt`. 
 
 2. ##### database
     - **mysql:** 
@@ -120,7 +120,6 @@ Depending on the module you would like to implement different plugins or OS bina
        
 10. ##### python
     - Python libraries: check `/python/requirements.txt`
-    - fabric <= 1.14.1`, `boto3`, `termcolor` and `dyn`. 
 
 11. ##### scm
     - git 

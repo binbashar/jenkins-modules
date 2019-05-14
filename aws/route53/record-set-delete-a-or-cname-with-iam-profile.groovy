@@ -7,7 +7,7 @@
  *
  * IMPORTANT
  * pre-reqs: this module relies on GNU/Linux pkgs libssl-dev, python-dev, python-pip, python2.7
- * and py libraries fabric <= 1.14.1, boto3, pyOpenSSL, decorator to be configured to run without
+ * and py libraries Fabric3 == 1.13.1.post1, boto3, pyOpenSSL, decorator to be configured to run without
  * any initial or additional setup.
  *
  * This module handle Iam user profile AWS credentials.
@@ -47,7 +47,7 @@ def call(String jenkinsModulesPath, String dnsRecordSetComment, String dnsRecord
 
     try {
         sh "#!/bin/bash \n" +
-                "fab -f ${jenkinsModulesPath}/python/jenkins_dns_aws_route53.py -R local" +
+                "fab -f ${jenkinsModulesPath}/python/dns/jenkins_dns_aws_route53.py -R local" +
                 " delete_resources_record_sets:" +
                 "\"${awsIamProfile}\"," +
                 "\"${dnsRecordSetName}\"," +

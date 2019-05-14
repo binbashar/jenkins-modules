@@ -36,7 +36,8 @@ def call(String dnsRecordSetName) {
             returnStdout: true
         ).trim()
 
-        echo "[DEBUG] nslookup output: ${lookupResult}"
+        echo "[DEBUG] nslookup ${dnsRecordSetName} output: ${lookupResult}"
+        echo "[DEBUG] if output empty -> OK"
 
     } catch (Exception e) {
         echo "[ERROR] Error while running nslookup with domain=${dnsRecordSetName}"
@@ -46,6 +47,7 @@ def call(String dnsRecordSetName) {
     // Since the grep expression expects to find the negative case
     // eg: server can't find www.binbash.com.ca: NXDOMAIN), we test for an empty string here
     if (lookupResult == "") {
+        echo "[DEBUG] nslookup ${dnsRecordSetName} RESOLVING"
         return true
     }
     return false
