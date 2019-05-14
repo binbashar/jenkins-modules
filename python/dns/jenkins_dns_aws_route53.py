@@ -3,9 +3,9 @@ from fabric.api import settings, env
 
 import boto3
 import sys
+import importlib
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
 
 env.user = 'jenkins'
 env.roledefs = {
@@ -51,17 +51,17 @@ If you have a lot of hosted zones, you can use the maxitems parameter to list th
                 if hosted_zones.get('LinkedService') is not None:
                     hostedzone_linkedserv_serv = hosted_zones.get('LinkedService').get('ServicePrincipal')
 
-                print "Route53 Hosted Zones:"
-                print 'hostedzone_id: ' + str(hostedzone_id)
-                print 'hostedzone_name: ' + str(hostedzone_name)
-                print 'hostedzone_caller_ref: ' + str(hostedzone_caller_ref)
-                print 'hostedzone_conf_privzone: ' + str(hostedzone_conf_privzone)
-                print 'hostedzone_record_count: ' + str(hostedzone_record_count)
-                print 'hostedzone_linkedserv_serv: ' + str(hostedzone_linkedserv_serv)
+                print("Route53 Hosted Zones:")
+                print('hostedzone_id: ' + str(hostedzone_id))
+                print('hostedzone_name: ' + str(hostedzone_name))
+                print('hostedzone_caller_ref: ' + str(hostedzone_caller_ref))
+                print('hostedzone_conf_privzone: ' + str(hostedzone_conf_privzone))
+                print('hostedzone_record_count: ' + str(hostedzone_record_count))
+                print('hostedzone_linkedserv_serv: ' + str(hostedzone_linkedserv_serv))
 
         except Exception as error:
             # print colored(error, 'red')
-            print "exception :" + str(error)
+            print("exception :" + str(error))
 
 
 @task
@@ -109,17 +109,17 @@ Lists the resource record sets in a specified hosted zone.
                 for record_values in resource_record_sets.get('ResourceRecords'):
                     resource_record_sets_record_value = record_values.get('Value')
 
-                print ""
-                print "Route53 Rosource record sets for zone: " + hosted_zone_id
-                print 'resource_record_sets_name: ' + str(resource_record_sets_name)
-                print 'resource_record_sets_type: ' + str(resource_record_sets_type)
-                print 'resource_record_sets_region: ' + str(resource_record_sets_region)
-                print 'resource_record_sets_ttl: ' + str(resource_record_sets_ttl)
-                print 'resource_record_sets_record_value: ' + str(resource_record_sets_record_value)
+                print("")
+                print("Route53 Rosource record sets for zone: " + hosted_zone_id)
+                print('resource_record_sets_name: ' + str(resource_record_sets_name))
+                print('resource_record_sets_type: ' + str(resource_record_sets_type))
+                print('resource_record_sets_region: ' + str(resource_record_sets_region))
+                print('resource_record_sets_ttl: ' + str(resource_record_sets_ttl))
+                print('resource_record_sets_record_value: ' + str(resource_record_sets_record_value))
 
         except Exception as error:
             # print colored(error, 'red')
-            print "exception :" + str(error)
+            print("exception :" + str(error))
 
 
 @task
@@ -160,25 +160,25 @@ Lists the resource record sets in a specified hosted zone and check if record_se
                 MaxItems='100'
             )
 
-            resource_record_sets_name = ""
+            # resource_record_sets_name = ""
             for resource_record_sets in response['ResourceRecordSets']:
 
                 resource_record_sets_name = resource_record_sets.get('Name')
 
                 if resource_record_sets_name == record_set_name:
-                    print ""
-                    print "Route53 Rosource record sets for zone: " + hosted_zone_id
-                    print 'resource_record_sets_name: ' + str(resource_record_sets_name) + ' EXISTS!'
+                    print("")
+                    print("Route53 Rosource record sets for zone: " + hosted_zone_id)
+                    print('resource_record_sets_name: ' + str(resource_record_sets_name) + ' EXISTS!')
                     return True
 
-            print ""
-            print "Route53 Rosource record sets for zone: " + hosted_zone_id
-            print 'resource_record_sets_name: ' + str(record_set_name) + ' does NOT exists!'
+            print("")
+            print("Route53 Rosource record sets for zone: " + hosted_zone_id)
+            print('resource_record_sets_name: ' + str(record_set_name) + ' does NOT exists!')
             return False
 
         except Exception as error:
             # print colored(error, 'red')
-            print "exception :" + str(error)
+            print("exception :" + str(error))
 
 
 @task
@@ -251,20 +251,20 @@ CREATE : Creates a resource record set that has the specified values.
 
         if (record_set_type == 'A' or record_set_type == 'CNAME') and \
                 check_resources_record_sets(profile_name_arg, record_set_name, hosted_zone_id_arg, region_name):
-            print ""
-            print "check_resources_record_sets: " + str(check_resources_record_sets(profile_name_arg, record_set_name,
-                                                                                hosted_zone_id_arg, region_name))
-            print ""
+            print("")
+            print("check_resources_record_sets: " + str(check_resources_record_sets(profile_name_arg, record_set_name,
+                                                                                    hosted_zone_id_arg, region_name)))
+            print("")
 
-            print ""
-            print "SUPPORTED RECORD " + record_set_name + " TYPE and RECORD ALREADY EXISTS"
-            print ""
+            print("")
+            print("SUPPORTED RECORD " + record_set_name + " TYPE and RECORD ALREADY EXISTS")
+            print("")
 
         elif record_set_type == 'A' or record_set_type == 'CNAME':
 
-            print ""
-            print "SUPPORTED RECORD TYPE and RECORD WILL BE CREATED"
-            print ""
+            print("")
+            print("SUPPORTED RECORD TYPE and RECORD WILL BE CREATED")
+            print("")
 
             try:
                 response = aws_dns.change_resource_record_sets(
@@ -289,7 +289,7 @@ CREATE : Creates a resource record set that has the specified values.
                     }
                 )
 
-                print response
+                print(response)
 
                 record_set_status = 'PENDING'
                 while record_set_status == 'PENDING':
@@ -297,20 +297,22 @@ CREATE : Creates a resource record set that has the specified values.
                         record_set_status = 'INSYNC'
 
                 if record_set_status == 'INSYNC':
-                    print ''
-                    print 'record set: ' + str(record_set_name) + ' SUCCESSFULLY CREATED'
+                    print('')
+                    print('record set: ' + str(record_set_name) + ' SUCCESSFULLY CREATED')
+                    return True
 
                 else:
-                    print 'record set: ' + str(record_set_name) + ' NOT CREATED'
+                    print('record set: ' + str(record_set_name) + ' NOT CREATED')
+                    return False
 
             except Exception as error:
                 # print colored(error, 'red')
-                print "exception :" + str(error)
+                print("exception :" + str(error))
 
         else:
-            print ""
-            print "NOT SUPPORTED RECORD TYPE"
-            print ""
+            print("")
+            print("NOT SUPPORTED RECORD TYPE")
+            print("")
 
 
 @task
@@ -384,9 +386,9 @@ If a resource set does exist, Amazon Route 53 updates it with the values in the 
 
         if (record_set_type == 'A' or record_set_type == 'CNAME') and \
                 check_resources_record_sets(profile_name_arg, record_set_name, hosted_zone_id_arg, region_name):
-            print ""
-            print "SUPPORTED RECORD TYPE and EXISTS"
-            print ""
+            print("")
+            print("SUPPORTED RECORD TYPE and EXISTS")
+            print("")
 
             try:
                 response = aws_dns.change_resource_record_sets(
@@ -411,18 +413,20 @@ If a resource set does exist, Amazon Route 53 updates it with the values in the 
                     }
                 )
 
-                print response
-                print ''
-                print 'record set: ' + str(record_set_name) + ' SUCCESSFULLY UPDATED'
+                print(response)
+                print('')
+                print('record set: ' + str(record_set_name) + ' SUCCESSFULLY UPDATED')
+                return True
 
             except Exception as error:
                 # print colored(error, 'red')
-                print "exception :" + str(error)
+                print("exception :" + str(error))
 
         else:
-            print ""
-            print "NOT SUPPORTED RECORD TYPE OR RECORD NAME DOES NOT EXISTS"
-            print ""
+            print("")
+            print("NOT SUPPORTED RECORD TYPE OR RECORD NAME DOES NOT EXISTS")
+            print("")
+            return False
 
 
 @task
@@ -493,13 +497,13 @@ DELETE : Deletes an existing resource record set that has the specified values.
         # 'Type': 'SOA' | 'A' | 'TXT' | 'NS' | 'CNAME' | 'MX' | 'NAPTR' | 'PTR' | 'SRV' | 'SPF' | 'AAAA' | 'CAA',
         record_set_type = str(record_set_type_arg)
 
-        print "### record_set_type ### " + record_set_type
+        print("### record_set_type ### " + record_set_type)
 
         if (record_set_type == 'A' or record_set_type == 'CNAME') and \
                 check_resources_record_sets(profile_name_arg, record_set_name, hosted_zone_id_arg, region_name):
-            print ""
-            print "SUPPORTED RECORD TYPE and EXISTS it's going to be DELETED"
-            print ""
+            print("")
+            print("SUPPORTED RECORD TYPE and EXISTS it's going to be DELETED")
+            print("")
 
             try:
                 response = aws_dns.change_resource_record_sets(
@@ -524,15 +528,17 @@ DELETE : Deletes an existing resource record set that has the specified values.
                     }
                 )
 
-                print response
-                print ''
-                print 'record set: ' + str(record_set_name) + ' SUCCESSFULLY DELETED'
+                print(response)
+                print('')
+                print('record set: ' + str(record_set_name) + ' SUCCESSFULLY DELETED')
+                return True
 
             except Exception as error:
                 # print colored(error, 'red')
-                print "exception :" + str(error)
+                print("exception :" + str(error))
 
         else:
-            print ""
-            print "NOT SUPPORTED RECORD TYPE OR RECORD NAME DOES NOT EXISTS NOT POSSIBLE TO DELETE"
-            print ""
+            print("")
+            print("NOT SUPPORTED RECORD TYPE OR RECORD NAME DOES NOT EXISTS NOT POSSIBLE TO DELETE")
+            print("")
+            return False
