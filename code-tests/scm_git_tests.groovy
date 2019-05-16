@@ -14,7 +14,7 @@ def tagReleaseWithLastChanges(String releaseTagPrefix, String tagFilter, String 
 
 //    String tagDate = sh(returnStdout: true, script: 'date +%Y-%m-%d-%H-%M-%S').trim()
     String dateCmd = 'date +%Y-%m-%d-%H-%M-%S'
-    String tagDate = executeCurlCommand(dateCmd)
+    String tagDate = executeBashCommand(dateCmd)
 
 //    String lastChangesDiffMsg = getDiffMessages(fromCommitHash, currentDeployCommitHash)
     lastChangesDiffMsg = "exequielrafaela (Tue Apr 23 11:30:13 2019): BBL-62 updating parameter section with return value for aws modules d6cf65e " +
@@ -32,14 +32,14 @@ def tagReleaseWithLastChanges(String releaseTagPrefix, String tagFilter, String 
 //    sh "git tag -a ${releaseTagPrefix}_${tagDate} ${currentDeployCommitHash} -m \"${tagMessage} ${lastChangesDiffMsg}\""
     String gitTagCmd = "git tag -a ${releaseTagPrefix}_${tagDate} ${currentDeployCommitHash} -m \"${tagMessage} ${lastChangesDiffMsg}\""
     println "gitTagCmd: ${gitTagCmd}"
-    executeCurlCommand(gitTagCmd)
+    executeBashCommand(gitTagCmd)
 
 //    sh 'git push --tags'
     String gitTagPush = 'git push --tags'
-    executeCurlCommand(gitTagPush)
+    executeBashCommand(gitTagPush)
 }
 
-def static executeCurlCommand(shCmd){
+def static executeBashCommand(shCmd){
     def proc = shCmd.execute()
     def outputStream = new StringBuffer()
     proc.waitForProcessOutput(outputStream, System.err)
