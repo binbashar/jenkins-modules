@@ -5,6 +5,8 @@
 !*.dockeringnore
 !*.hosts
 !/.gitignore
+!/.chglog
+!/.gitallowed
 !*.gitkeep
 
 # OS generated files #
