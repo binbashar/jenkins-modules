@@ -180,5 +180,38 @@ def waitForPod(String podPrefix, String namespace, String targetPodStatus = 'Run
     return pod
 }
 
+/*
+ * Get the full data about any k8s object.
+ */
+def getObject(objectType, objectName, namespace = "default", context = null) {
+    String useContext = (context) ? " --context \"${context}\"" : ""
+
+    String cmd = """
+kubectl get ${objectType} ${useContext} \
+    -n \"${namespace}\" \
+    -o json \
+    --ignore-not-found \
+    ${objectName}
+"""
+    String podOut = sh(returnStdout: true, script: cmd).trim()
+    return parseJson(podOut)
+}
+
+/*
+ * Parse JSON string.
+ */
+def parseJson(jsonString) {
+    def decodedJson = null
+    if (jsonString != null) {
+        try {
+            decodedJson = readJSON text: jsonString
+        } catch (ex) {
+            println "[WARN] Unable to parse JSON using jsonString=" + jsonString
+            println ex
+        }
+    }
+    return decodedJson
+}
+
 // Note: this line is crucial when you want to load an external groovy script
 return this

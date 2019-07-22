@@ -13,6 +13,16 @@
  * This module has to be load as shown in the root context README.md closely considering to meet the Pre-requisites section
 */
 
+/*
+ * Get bucket info by name and region.
+ */
+def getBucketInfo(String name, String region, String profile = null) {
+    if (s3HeadBucket(name, profile) == 0)
+        return buildBucketInfo(name, region)
+
+    return null
+}
+
 /**
  ** Function:
  * Check whether given bucket exists.
@@ -28,6 +38,51 @@ def hasBucket(String name, String profile = null) {
         return true
     
     return false
+}
+
+/*
+ * Create a fully public bucket -- use it only if you understand what that means.
+ */
+def createPublicBucket(String name, String region, String profile = null) {
+    String bucketAcl = "public-read"
+    def createdBucket = createBucket(name, region, bucketAcl, profile)
+    if (createdBucket) {
+        // A permissive read-only policy is needed on public buckets
+        String policy = """
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::${name}/*"
+    }
+  ]
+}
+"""
+        if (s3PutBucketPolicy(name, policy, profile) != 0)
+            println "[WARNING] Failed to put policy to make this bucket public."
+
+        // An endulging CORS config is needed for browser to load certain assets
+        String corsConfig = '''
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["*"],
+      "AllowedHeaders": ["Authorization"],
+      "AllowedMethods": ["GET"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}
+'''
+        if (s3PutBucketCors(name, corsConfig, profile) != 0)
+            println "[WARNING] Failed to put CORS configuration to this bucket."
+
+        return createdBucket
+    }
+    return null
 }
 
 /**
@@ -62,12 +117,23 @@ def hasBucket(String name, String profile = null) {
  *          eg: createBucket == [Location:"http://my-bucket.s3.amazonaws.com/"]
  *              createdBucket["Location"] == "http://my-bucket.s3.amazonaws.com/"
  */
-def createBucket(String name, String region, profile = null) {
-    def createdBucket = s3CreateBucket(name, region, profile)
+def createBucket(String name, String region, String acl = "private", String profile = null) {
+    def createdBucket = s3CreateBucket(name, region, acl, profile)
     if (createdBucket && createdBucket["Location"]) {
-        return createdBucket["Location"]
+        return buildBucketInfo(name, region)
     }
     return null
+}
+
+/*
+ * Build Bucket Information based on it's name and region
+ */
+def buildBucketInfo(String name, String region) {
+    return [
+            "Name": name,
+            "Region": region,
+            "URL": "https://" + name + ".s3." + region + ".amazonaws.com"
+    ]
 }
 
 /**
@@ -81,8 +147,11 @@ def createBucket(String name, String region, profile = null) {
  *
  * @return NO return value. This call will execute the s3DeleteBucket() function included in this module.
  */
-def deleteBucket(String name, String region, profile = null) {
-    return s3DeleteBucket(name, region, profile)
+def deleteBucket(String name, String region, String profile = null) {
+    if (s3DeleteBucket(name, region, profile) == 0)
+        return true
+
+    return false
 }
 
 /**
@@ -102,13 +171,13 @@ def deleteBucket(String name, String region, profile = null) {
  */
 def s3HeadBucket(String name, profile = null) {
     String cmd = "aws s3api head-bucket" +
-        " --bucket=${name}"
-    
-    cmd += (profile) ? " --profile=${profile}" : ""
-    
+            " --bucket='${name}'"
+
+    cmd += (profile) ? " --profile='${profile}'" : ""
+
     // Redirect stderr as we need to capture it
     cmd += " 2>&1"
-    
+
     String out = sh(returnStatus: true, script: cmd)
     return out.toInteger()
 }
@@ -140,17 +209,53 @@ def s3HeadBucket(String name, profile = null) {
  *
  * parseJson(out) == [Location:"http://my-bucket.s3.amazonaws.com/"]
  */
-def s3CreateBucket(String name, String region, profile = null) {
+def s3CreateBucket(String name, String region, String acl = "private", String profile = null) {
     String cmd = "aws s3api create-bucket" +
-        " --bucket=${name}" +
-        " --region=${region}" +
-        " --create-bucket-configuration LocationConstraint=${region}" +
-        " --acl private"
-    
+            " --bucket='${name}'" +
+            " --region='${region}'" +
+            " --create-bucket-configuration='LocationConstraint=${region}'" +
+            " --acl='${acl}'"
+
     cmd += (profile) ? " --profile=${profile}" : ""
-    
+
     String out = sh(returnStdout: true, script: cmd).trim()
     return parseJson(out)
+}
+
+def s3PutBucketPolicy(String name, String policy, String profile) {
+    // Escape/replace special chars in the policy
+    policy = policy.replaceAll('"', '\"')
+    policy = policy.replaceAll("\n", "")
+
+    String cmd = "aws s3api put-bucket-policy" +
+            " --bucket=${name}" +
+            " --policy='${policy}'"
+
+    cmd += (profile) ? " --profile=${profile}" : ""
+
+    // Redirect stderr as we need to capture it
+    cmd += " 2>&1"
+
+    String out = sh(returnStatus: true, script: cmd)
+    return out.toInteger()
+}
+
+def s3PutBucketCors(name, corsConfig, profile) {
+    // Escape/replace special chars in the policy
+    corsConfig = corsConfig.replaceAll('"', '\"')
+    corsConfig = corsConfig.replaceAll("\n", "")
+
+    String cmd = "aws s3api put-bucket-cors" +
+            " --bucket='${name}'" +
+            " --cors-configuration='${corsConfig}'"
+
+    cmd += (profile) ? " --profile='${profile}'" : ""
+
+    // Redirect stderr as we need to capture it
+    cmd += " 2>&1"
+
+    String out = sh(returnStatus: true, script: cmd)
+    return out.toInteger()
 }
 
 /**
@@ -178,15 +283,18 @@ def s3CreateBucket(String name, String region, profile = null) {
  *
  * parseJson(out) == [delete:["s3://mybucket/test1.txt", "s3://mybucket/test2.txt"], remove_bucket:"mybucket"]
  */
-def s3DeleteBucket(String name, String region, profile = null) {
+def s3DeleteBucket(String name, String region, String profile = null) {
     String cmd = "aws s3 rb" +
-        " s3://${name}" +
-        " --force"
-    
+            " s3://${name}" +
+            " --force"
+
     cmd += (profile) ? " --profile=${profile}" : ""
-    
-    String out = sh(returnStdout: true, script: cmd).trim()
-    return parseJson(out)
+
+    // Redirect stderr as we need to capture it
+    cmd += " 2>&1"
+
+    String out = sh(returnStatus: true, script: cmd)
+    return out.toInteger()
 }
 
 /**

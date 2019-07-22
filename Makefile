@@ -18,7 +18,7 @@ endef
 
 GIT_SEMTAG_VER_PATCH := $(shell ${GIT_SEMTAG_CMD_PREFIX} final -s patch -o)
 GIT_SEMTAG_VER_MINOR := $(shell ${GIT_SEMTAG_CMD_PREFIX} final -s minor -o)
-GIT_SEMTAG_VER_MINOR := $(shell ${GIT_SEMTAG_CMD_PREFIX} final -s major -o)
+GIT_SEMTAG_VER_MAJOR := $(shell ${GIT_SEMTAG_CMD_PREFIX} final -s major -o)
 
 help:
 	@echo 'Available Commands:'

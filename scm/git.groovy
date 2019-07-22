@@ -173,6 +173,15 @@ def getPrettyDiffMessages(String releaseTagFilter, String currentCommitHash, Str
     return lastChangesMsg
 }
 
+/*
+ * Check if current working directory is a Git repository.
+ */
+def isRepository() {
+    String out = sh(returnStatus: true, script: 'git status')
+    return out.toInteger() == 0
+}
+
+
 /**
  ** Function:
  * Tag current release using the given tagPrefix and tagMessage.
@@ -241,6 +250,38 @@ def tagReleaseWithLastChanges(String releaseTagPrefix, String tagFilter, String 
     sh "git tag -a ${releaseTagPrefix}_${tagDate} ${currentDeployCommitHash} -m \"${tagMessage} ${lastChangesDiffMsg}\""
     sh "git tag -l '${releaseTagPrefix}*'"
     sh 'git push --tags'
+}
+
+/*
+ * Similar to getDiffMessages function but it will return a list of objects,
+ * each containing datetime, author, message and hash fields.
+ */
+def getCommitsDelta(fromCommitHash, toCommitHash, pathLimit = "") {
+    def commitsDelta = []
+    String gitLogCmd = "git log --date=local --pretty=format:\"%ad ///%an ///%s ///%h \" ${fromCommitHash}..${toCommitHash}"
+
+    if (pathLimit != "") {
+        gitLogCmd += " -- " + pathLimit
+    }
+
+    String gitLogCmdOut = sh(returnStdout: true, script: gitLogCmd).trim()
+    if (gitLogCmdOut != "") {
+        def lines = gitLogCmdOut.split('\n')
+        for (String line in lines) {
+            if (line.trim() == "")
+                continue
+
+            def fields = line.trim().split('///')
+            def commitInfo = [
+                    "datetime": fields[0],
+                    "author": fields[1],
+                    "message": fields[2],
+                    "hash": fields[3],
+            ]
+            commitsDelta.add(commitInfo)
+        }
+    }
+    return commitsDelta
 }
 
 // Note: this line is crucial when you want to load an external groovy script

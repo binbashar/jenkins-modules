@@ -111,6 +111,30 @@ def sendBuildStatuslastChanges(String status, String secondaryMessage = "") {
     send(message, color)
 }
 
+/*
+ * Send a release notification using a predefined format and optionally a custom
+ * Slack channel.
+ *
+ *  @param appName          The name of the application
+ *  @param envName          The name of the environment
+ *  @param commitsMessage   A message with the commits delta for this release
+ *  @param compareUrl       An URL that can be used to compare the commits delta
+ *  @param channel          An Slack channel for posting this notification
+ */
+def notifyRelease(appName, envName, commitsMessage, compareUrl, channel) {
+    def color = getColorByBuildStatus('SUCCESS')
+    String msg = "${commitsMessage} \n"
+
+    def attachments = [[
+                               title: "<${compareUrl}|Commits included this release>",
+                               pretext: "*NEW RELEASE* \nA new version of *${appName}* application is available on *${envName}* environment.",
+                               text: msg,
+                               color: color,
+                       ]]
+
+    slackSend(channel: channel, attachments: attachments)
+}
+
 /**
  ** Function:
  * Set color code identifier for different jenkins job stage status: STARTED, SUCCESS and FAILURE.

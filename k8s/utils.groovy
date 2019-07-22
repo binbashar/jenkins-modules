@@ -60,5 +60,39 @@ def runCmd(String cmd) {
     return sh(returnStdout: true, script: cmd).trim()
 }
 
+/*
+ * Parse an image that is assembled by name:tag pieces, such as: repo.images.com/image:dev-123-abc970
+ */
+def parseImage(String image) {
+    return parseString(image, ["name", "tag"], ":")
+}
+
+/*
+ * Parse an image tag that is assembled by many pieces, such as: dev-123-abc970
+ */
+def parseImageTag(String imageTag, ArrayList tagPieces, String piecesSeparator = "-") {
+    return parseString(imageTag, tagPieces, piecesSeparator)
+}
+
+/*
+ * Parse a string that is assembled by many pieces.
+ * @param String subject            The string to be parsed
+ * @param String subjectPieces      Pieces that assemble the subject string
+ * @param String piecesSeparator    Symbol that separates the pieces in the subject string
+ * @return Map that has the given subject pieces as fields and the corresponding values parsed from the subject string
+ */
+def parseString(String subject, ArrayList subjectPieces, String piecesSeparator = "-") {
+    def parsedSubject = [:]
+
+    String[] pieces = subject.split(piecesSeparator)
+
+    for (int i = 0; i < subjectPieces.size(); i++) {
+        if (i < pieces.length)
+            parsedSubject[subjectPieces[i]] = pieces[i]
+    }
+
+    return parsedSubject
+}
+
 // Note: this line is crucial when you want to load an external groovy script
 return this
