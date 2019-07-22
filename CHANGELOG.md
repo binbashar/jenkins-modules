@@ -3,7 +3,10 @@
 
 
 <a name="v0.0.4"></a>
-## [v0.0.4] - 0001-01-01
+## [v0.0.4] - 2019-07-22
+### Pull Requests
+- Merge pull request [#6](https://github.com/binbashar/jenkins-modules/issues/6) from binbashar/sync-with-head-lh-repo
+
 
 <a name="v0.0.3"></a>
 ## [v0.0.3] - 2019-07-05
