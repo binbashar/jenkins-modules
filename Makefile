@@ -29,22 +29,78 @@ release-patch: ## releasing patch (eg: 0.0.1 -> 0.0.2) based on semantic tagging
 	${GIT_SEMTAG_CMD_PREFIX} get
 	${GIT_SEMTAG_CMD_PREFIX} final -s patch
 
+release-patch-with-changelog: ## make changelog-patch && git add && git commit && make release-patch
+	@if git status | grep 'nothing to commit, working directory clean'; then\
+		make changelog-patch;\
+		git status;\
+		git add CHANGELOG.md;\
+		git commit -m "Updating CHANGELOG.md via make changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]";\
+		git push origin master;\
+		make release-patch;\
+	else\
+		echo "===============================================================================================";\
+    	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
+		echo "===============================================================================================";\
+    	echo "$$(git status)";\
+		echo "===============================================================================================";\
+	fi
+
+release-patch-with-changelog-circleci: ## make changelog-patch && git add && git commit && make release-patch
+	make changelog-patch
+	git status
+	git add CHANGELOG.md
+	git commit -m "Updating CHANGELOG.md via make changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]"
+	git push origin master
+	make release-patch
+
 release-minor: ## releasing minor (eg: 0.0.2 -> 0.1.0) based on semantic tagging script for Git
 	# pre-req -> https://github.com/pnikosis/semtag
 	${GIT_SEMTAG_CMD_PREFIX} get
 	${GIT_SEMTAG_CMD_PREFIX} final -s minor
+
+release-minor-with-changelog: ## make changelog-minor && git add && git commit && make release-minor
+	@if git status |grep 'nothing to commit, working directory clean'; then\
+		make changelog-minor;\
+		git status;\
+		git add CHANGELOG.md;\
+		git commit -m "Updating CHANGELOG.md via make changelog-minorfor ${GIT_SEMTAG_VER_PATCH} [ci skip]";\
+		git push origin master;\
+		make release-minor;\
+	else\
+		echo "===============================================================================================";\
+    	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
+		echo "===============================================================================================";\
+    	echo "$$(git status)";\
+		echo "===============================================================================================";\
+	fi
 
 release-major: ## releasing major (eg: 0.1.0 -> 1.0.0) based on semantic tagging script for Git
 	# pre-req -> https://github.com/pnikosis/semtag
 	${GIT_SEMTAG_CMD_PREFIX} get
 	${GIT_SEMTAG_CMD_PREFIX} final -s major
 
+release-major-with-changelog: ## make changelog-major && git add && git commit && make release-major
+	@if git status |grep 'nothing to commit, working directory clean'; then\
+		make changelog-major;\
+		git status;\
+		git add CHANGELOG.md;\
+		git commit -m "Updating CHANGELOG.md via make changelog-major for ${GIT_SEMTAG_VER_PATCH} [ci skip]";\
+		git push origin master;\
+		make release-major;\
+	else\
+		echo "===============================================================================================";\
+    	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
+		echo "===============================================================================================";\
+    	echo "$$(git status)";\
+		echo "===============================================================================================";\
+	fi
+
 changelog-init: ## git-chglog (https://github.com/git-chglog/git-chglog) config initialization -> ./.chglog
 	@if [ ! -d ./.chglog ]; then\
 		docker run --rm -v ${PWD_DIR}:/data -it binbash/git-release --init;\
 		sudo chown -R ${LOCAL_OS_USER}:${LOCAL_OS_USER} ./.chglog;\
 	else\
-		  echo "==============================";\
+		echo "==============================";\
     	echo "git-chglog already initialized";\
     	echo "==============================";\
     	echo "$$(ls ./.chglog)";\
@@ -65,3 +121,5 @@ changelog-major: ## git-chglog generation for major release
 	docker run --rm -v ${PWD_DIR}:/data -it binbash/git-release -o CHANGELOG.md --next-tag ${GIT_SEMTAG_VER_MAJOR}
 	sudo chown -R ${LOCAL_OS_USER}:${LOCAL_OS_USER} ./.chglog
 	sudo chown -R ${LOCAL_OS_USER}:${LOCAL_OS_USER} ./CHANGELOG.md
+
+

@@ -1,9 +1,28 @@
 <div align="center">
-    <img src="figures/binbash.png" alt="drawing" width="350"/>
+    <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash.png" alt="drawing" width="350"/>
 </div>
 <div align="right">
-  <img src="figures/binbash-leverage-jenkins.png" alt="leverage" width="230"/>
+  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash-leverage-jenkins.png" alt="leverage" width="230"/>
 </div>
+
+# jenkins-modules
+
+![GitHub](https://img.shields.io/github/license/binbashar/jenkins-modules.svg)
+![GitHub language count](https://img.shields.io/github/languages/count/binbashar/jenkins-modules.svg)
+![GitHub top language](https://img.shields.io/github/languages/top/binbashar/jenkins-modules.svg)
+![GitHub repo size](https://img.shields.io/github/repo-size/binbashar/jenkins-modules.svg)
+![GitHub issues](https://img.shields.io/github/issues/binbashar/jenkins-modules.svg)
+![GitHub closed issues](https://img.shields.io/github/issues-closed/binbashar/jenkins-modules.svg)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/binbashar/jenkins-modules.svg)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/binbashar/jenkins-modules.svg)
+![GitHub release](https://img.shields.io/github/release/binbashar/jenkins-modules.svg)
+![GitHub Release Date](https://img.shields.io/github/release-date/binbashar/jenkins-modules.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/binbashar/jenkins-modules.svg)
+
+![GitHub followers](https://img.shields.io/github/followers/binbashar.svg?style=social)
+![GitHub forks](https://img.shields.io/github/forks/binbashar/jenkins-modules.svg?style=social)
+![GitHub stars](https://img.shields.io/github/stars/binbashar/jenkins-modules.svg?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/binbashar/jenkins-modules.svg?style=social)
 
 # DevOps Jenkins Modules
 
@@ -21,7 +40,7 @@
 - **Jenkins Shell** all the module functions have been tested under `/bin/bash` GNU/Linux Shell.
 Please consider configuring it from the jenkins UI (`https://your.jenkins.domain.com/configure`)
 <div align="center">
-    <img src="figures/jenkins-shell.png" alt="drawing" width="750"/>
+    <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/jenkins-shell.png" alt="drawing" width="750"/>
 </div>
 
 Depending on the module you would like to implement different plugins or OS binaries will be needed, such as:
@@ -687,3 +706,28 @@ node {
     }
 }
 ```
+
+# Release Management
+
+## Docker based makefile commands
+- https://cloud.docker.com/u/binbash/repository/docker/binbash/git-release
+- https://github.com/binbashar/jenkins-modules/blob/master/Makefile
+
+Root directory `Makefile` has the automated steps (to be integrated with **CircleCI jobs** []() )
+
+### CircleCi PR auto-release job
+<div align="left">
+  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/circleci.png" alt="leverage-circleci" width="230"/>
+</div>
+
+- https://circleci.com/gh/binbashar/jenkins-modules
+- **NOTE:** Will only run after merged PR.
+
+### Manual execution from workstation
+```
+$ make
+Available Commands:
+ - release-major-with-changelog make changelog-major && git add && git commit && make release-major
+ - release-minor-with-changelog make changelog-minor && git add && git commit && make release-minor
+ - release-patch-with-changelog make changelog-patch && git add && git commit && make release-patch
+ ```

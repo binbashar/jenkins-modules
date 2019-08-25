@@ -1,0 +1,48 @@
+version: 2.1
+
+jobs:
+  release-patch-with-changelog:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "f5:ca:b0:c5:06:26:aa:ec:c8:a7:75:57:f0:e7:c2:f3"
+
+      - run: pwd
+
+      - run: ls -ltra
+
+      - run: git branch
+
+      - run:
+          name: release-patch-with-changelog-circleci
+          command: |
+            if git status | grep 'nothing to commit, working tree clean'; then
+              echo "==============================================================================================="
+              echo "release-patch-with-changelog-circleci"
+              echo "==============================================================================================="
+              git config --global user.email "info@binbash.com.ar"
+              git config --global user.name "binbashdevops"
+              make release-patch-with-changelog-circleci
+            else
+              echo "==============================================================================================="
+              echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below "
+              echo "==============================================================================================="
+              echo "$(git status)"
+              echo "==============================================================================================="
+            fi
+
+workflows:
+  version: 2
+  changelog_and_release:
+    jobs:
+      - release-patch-with-changelog:
+          filters:
+            branches:
+             only: # only branches matching the below regex filters will run
+               - master
