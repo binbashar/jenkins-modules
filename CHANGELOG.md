@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="v0.0.5"></a>
+## [v0.0.5] - 2019-09-12
+### Pull Requests
+- Merge pull request [#7](https://github.com/binbashar/jenkins-modules/issues/7) from binbashar/BBL-100-circile-ci-auto-release
+
+
 <a name="v0.0.4"></a>
 ## [v0.0.4] - 2019-07-22
 ### Pull Requests
@@ -26,7 +32,8 @@
 <a name="v0.0.1"></a>
 ## v0.0.1 - 2019-04-05
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.4...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.5...HEAD
+[v0.0.5]: https://github.com/binbashar/jenkins-modules/compare/v0.0.4...v0.0.5
 [v0.0.4]: https://github.com/binbashar/jenkins-modules/compare/v0.0.3...v0.0.4
 [v0.0.3]: https://github.com/binbashar/jenkins-modules/compare/v0.0.2...v0.0.3
 [v0.0.2]: https://github.com/binbashar/jenkins-modules/compare/v0.0.1...v0.0.2
