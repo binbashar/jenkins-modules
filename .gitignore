@@ -1,6 +1,9 @@
 # Hidden files #
 ################
 .*
+#
+# Except
+#
 !*.env.example
 !*.circleci
 !*.dockeringnore
@@ -9,6 +12,11 @@
 !/.chglog
 !/.gitallowed
 !*.gitkeep
+
+# SSH keys #
+############
+id_rsa
+id_dsa
 
 # OS generated files #
 ######################
@@ -34,6 +42,9 @@ Thumbs.db
 *.zip
 *.tar.gz
 
+#
+# Except
+#
 !lambda_function.*.zip
 !lambda_function.lambda_handler.zip
 !lambda_function.*.zip
@@ -58,7 +69,7 @@ Thumbs.db
 /src
 /venv
 
-# Custom Project files #
+# Custom Project tools files #
 ########################
 *.pyc
 *.pyo
