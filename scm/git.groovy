@@ -42,6 +42,7 @@ def getRepositoryUrl() {
  * Get the current latest single commit hash.
  *
  ** Parameters:
+ * @param String additionalArguments    You can pass extra arguments such '--short'
  * @return String currentCommitHash     current latest single commit hash, eg: '0dd359340a407669fe2f1564aa794ddc61da6a1d'
  *
  ** Return Example:
@@ -55,8 +56,9 @@ def getRepositoryUrl() {
  * $ git rev-parse HEAD
  * 0dd359340a407669fe2f1564aa794ddc61da6a1d
  */
-def getCurrentCommitHash() {
-    String currentCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+def getCurrentCommitHash(String additionalArguments = '') {
+    String gitCmd = "git rev-parse ${additionalArguments} HEAD"
+    String currentCommitHash = sh(returnStdout: true, script: gitCmd).trim()
     return currentCommitHash
 }
 
