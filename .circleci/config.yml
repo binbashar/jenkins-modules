@@ -1,6 +1,9 @@
 version: 2.1
 
 jobs:
+  #
+  # Release
+  #
   release-patch-with-changelog:
     machine:
       image: ubuntu-1604:201903-01
@@ -9,14 +12,8 @@ jobs:
     steps:
       - checkout
 
-      - add_ssh_keys:
-          fingerprints:
-            - "f5:ca:b0:c5:06:26:aa:ec:c8:a7:75:57:f0:e7:c2:f3"
-
       - run: pwd
-
       - run: ls -ltra
-
       - run: git branch
 
       - run:
@@ -36,12 +33,15 @@ jobs:
               echo "$(git status)"
               echo "==============================================================================================="
             fi
-
+#
+# Jobs workflow
+#
 workflows:
   version: 2
   changelog_and_release:
     jobs:
       - release-patch-with-changelog:
+          context: binbashar-org-global-context
           filters:
             branches:
              only: # only branches matching the below regex filters will run
