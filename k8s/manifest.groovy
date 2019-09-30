@@ -56,5 +56,37 @@ ${secretsYml}
     return template
 }
 
+/**
+ * This is similar to buildSecret function except that it takes a file argument
+ * that is typically used to define a filename that will be mounted to a Pod and
+ * will hold the values built from the given secrets list.
+ * 
+ * @param String name               Name of the secret
+ * @param String namespace          Namespace of the secret
+ * @param LinkedHashMap secrets     A list of key/value pairs that will become the contents of your secrets file
+ * @param String file               Name of the file that will hold your secrets
+ * @return String                   A Kubernetes secrets manifest
+ */
+def buildSecretOnFile(String name, String namespace, def secrets = [:], String file = null) {
+    String secretsYml = ""
+    secrets.each { itemName, itemValue ->
+        secretsYml += "" + itemName + ": " + itemValue + "\n"
+    }
+    secretsYml = secretsYml.bytes.encodeBase64().toString()
+
+    String template = """
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+type: Opaque
+data:
+  ${file}: ${secretsYml}
+"""
+    
+    return template
+}
+
 // Note: this line is crucial when you want to load an external groovy script
 return this
