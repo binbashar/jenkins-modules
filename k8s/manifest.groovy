@@ -36,7 +36,7 @@ def buildSecret(String name, String namespace, def secrets = [:]) {
     String secretsYml = ""
     // eg: secrets == [db_pass_user:'s3cr3t_readonly', db_pass_root:'s3cr3t_root']
     secrets.each { itemName, itemValue ->
-        String encodedValue = itemValue.bytes.encodeBase64().toString()
+        String encodedValue = itemValue.toString().bytes.encodeBase64().toString()
         // eg: secretsYml ==    db_user: s3cr3t_readonly
         //                      db_pass: s3cr3t_root
         secretsYml += "  " + itemName + ": " + encodedValue + "\n"
