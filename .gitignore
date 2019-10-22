@@ -69,7 +69,7 @@ Thumbs.db
 /src
 /venv
 
-# Custom Project tools files #
+# Custom Project files #
 ########################
 *.pyc
 *.pyo
