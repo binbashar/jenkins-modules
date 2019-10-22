@@ -10,7 +10,7 @@ jobs:
       # This job has been blocked because Docker Layer Caching is not available on your plan.
       # Please upgrade to continue building.
       # Note: you will need to push a new commit or call the API to rerun the pipeline.
-      #docker_layer_caching: true
+      docker_layer_caching: false
 
     steps:
       - checkout
