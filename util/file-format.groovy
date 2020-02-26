@@ -78,13 +78,5 @@ def mapToDotEnv(LinkedHashMap map) {
     return dotEnv
 }
 
-def mapToDotEnv(def lazyMap) {
-    def activeMap = [:]
-    for (entry in lazyMap) {
-        activeMap[entry.key] = entry.value
-    }
-    return mapToDotEnv(activeMap)
-}
-
 // Note: this line is crucial when you want to load an external groovy script
 return this
