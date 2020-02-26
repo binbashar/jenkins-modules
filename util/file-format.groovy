@@ -78,7 +78,7 @@ def mapToDotEnv(LinkedHashMap map) {
     return dotEnv
 }
 
-def mapToDotEnv(LazyMap lazyMap) {
+def mapToDotEnv(def lazyMap) {
     def activeMap = [:]
     for (entry in lazyMap) {
         activeMap[entry.key] = entry.value
