@@ -29,3 +29,5 @@ def replace(String sourceFile, String destFile, HashMap placeholderValues, Strin
     
     writeFile file: destFile, text: fileContents
 }
+
+return this
