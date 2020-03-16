@@ -198,6 +198,14 @@ kubectl get ${objectType} ${useContext} \
 }
 
 /*
+ * Check whether the given object exists.
+ */
+def checkObject(objectType, objectName, namespace = "default", context = null) {
+    def obj = getObject(objectType, objectName, namespace, context)
+    return obj != null
+}
+
+/*
  * Parse JSON string.
  */
 def parseJson(jsonString) {
