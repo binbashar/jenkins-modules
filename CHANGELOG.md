@@ -2,6 +2,9 @@
 ## [Unreleased]
 
 
+<a name="v0.0.12"></a>
+## [v0.0.12] - 2020-03-17
+
 <a name="v0.0.11"></a>
 ## [v0.0.11] - 2020-03-16
 
@@ -56,7 +59,8 @@
 <a name="v0.0.1"></a>
 ## v0.0.1 - 2019-04-05
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.11...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.12...HEAD
+[v0.0.12]: https://github.com/binbashar/jenkins-modules/compare/v0.0.11...v0.0.12
 [v0.0.11]: https://github.com/binbashar/jenkins-modules/compare/v0.0.10...v0.0.11
 [v0.0.10]: https://github.com/binbashar/jenkins-modules/compare/v0.0.9...v0.0.10
 [v0.0.9]: https://github.com/binbashar/jenkins-modules/compare/v0.0.8...v0.0.9
