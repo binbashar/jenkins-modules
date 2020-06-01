@@ -60,6 +60,21 @@ def getImagesByPrefix(repositoryName, imagePrefix) {
     return matches
 }
 
+/*
+ * Get the most recent image from the given repository that matches the given
+ * image prefix.
+ *
+ * @param String repositoryName The name of the repository
+ * @param String imagePrefix    An image tag prefix
+ * @return String The most recent image tag
+ */
+def getMostRecentImageTag(String repositoryName, String imagePrefix) {
+    String cmd = "aws ecr list-images" +
+        " --repository-name ${repositoryName}" +
+        " --query 'imageIds[?starts_with(imageTag, `${imagePrefix}`) == `true`]|[].imageTag|sort(@)|[-1]'"
+    return sh(returnStdout: true, script: cmd).trim()
+}
+
 /**
  ** Function:
  * Delete all images in the given list.
