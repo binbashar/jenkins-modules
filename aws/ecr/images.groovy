@@ -72,7 +72,8 @@ def getMostRecentImageTag(String repositoryName, String imagePrefix) {
     String cmd = "aws ecr list-images" +
         " --repository-name ${repositoryName}" +
         " --query 'imageIds[?starts_with(imageTag, `${imagePrefix}`) == `true`]|[].imageTag|sort(@)|[-1]'"
-    return sh(returnStdout: true, script: cmd).trim()
+    String imageTag = sh(returnStdout: true, script: cmd).trim()
+    return imageTag.replaceAll(/["']/, "")
 }
 
 /**
