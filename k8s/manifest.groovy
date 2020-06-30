@@ -59,18 +59,21 @@ ${secretsYml}
 /**
  * This is similar to buildSecret function except that it takes a file argument
  * that is typically used to define a filename that will be mounted to a Pod and
- * will hold the values built from the given secrets list.
+ * will hold the values built from the given secrets list. For instance, a
+ * typical use case is when you need to declare a .env file as a secret that you
+ * later on mount in a pod.
  * 
  * @param String name               Name of the secret
  * @param String namespace          Namespace of the secret
  * @param LinkedHashMap secrets     A list of key/value pairs that will become the contents of your secrets file
  * @param String file               Name of the file that will hold your secrets
+ * @param String keyValueSeparator  A separator to be used when keeping apart keys from values
  * @return String                   A Kubernetes secrets manifest
  */
-def buildSecretOnFile(String name, String namespace, def secrets = [:], String file = null) {
+def buildSecretOnFile(String name, String namespace, def secrets = [:], String file = null, String keyValueSeparator = ": ") {
     String secretsYml = ""
     secrets.each { itemName, itemValue ->
-        secretsYml += "" + itemName + ": " + itemValue + "\n"
+        secretsYml += "" + itemName + keyValueSeparator + itemValue + "\n"
     }
     secretsYml = secretsYml.bytes.encodeBase64().toString()
 
