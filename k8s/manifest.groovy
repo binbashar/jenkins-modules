@@ -67,10 +67,10 @@ ${secretsYml}
  * @param String file               Name of the file that will hold your secrets
  * @return String                   A Kubernetes secrets manifest
  */
-def buildSecretOnFile(String name, String namespace, def secrets = [:], String file = null) {
+def buildSecretOnFile(String name, String namespace, def secrets = [:], String file = null, String keyValueSeparator = ": ") {
     String secretsYml = ""
     secrets.each { itemName, itemValue ->
-        secretsYml += "" + itemName + ": " + itemValue + "\n"
+        secretsYml += "" + itemName + keyValueSeparator + itemValue + "\n"
     }
     secretsYml = secretsYml.bytes.encodeBase64().toString()
 
