@@ -34,29 +34,29 @@ help:
 #===================================#
 # GIT RELEASE: CircleCI Jobs cmds   #
 #===================================#
-release-patch-with-changelog-circleci: ## make -f release.mk changelog-patch && git add && git commit && make -f release.mk release-patch
-	make -f release.mk changelog-patch
+release-patch-with-changelog-circleci: ## make changelog-patch && git add && git commit && make release-patch
+	make changelog-patch
 	git status
 	git add CHANGELOG.md
-	git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]"
+	git commit -m "Updating CHANGELOG.md via make changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]"
 	git push origin master
-	make -f release.mk release-patch
+	make release-patch
 
-release-minor-with-changelog-circleci: ## make -f release.mk changelog-minor && git add && git commit && make -f release.mk release-minor
-	make -f release.mk changelog-minor
+release-minor-with-changelog-circleci: ## make changelog-minor && git add && git commit && make release-minor
+	make changelog-minor
 	git status
 	git add CHANGELOG.md
-	git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-minor for ${GIT_SEMTAG_VER_MINOR} [ci skip]"
+	git commit -m "Updating CHANGELOG.md via make changelog-minor for ${GIT_SEMTAG_VER_MINOR} [ci skip]"
 	git push origin master
-	make -f release.mk release-minor
+	make release-minor
 
-release-major-with-changelog-circleci: ## make -f release.mk changelog-major && git add && git commit && make -f release.mk release-major
-	make -f release.mk changelog-major
+release-major-with-changelog-circleci: ## make changelog-major && git add && git commit && make release-major
+	make changelog-major
 	git status
 	git add CHANGELOG.md
-	git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-major for ${GIT_SEMTAG_VER_MAJOR} [ci skip]"
+	git commit -m "Updating CHANGELOG.md via make changelog-major for ${GIT_SEMTAG_VER_MAJOR} [ci skip]"
 	git push origin master
-	make -f release.mk release-major
+	make release-major
 
 #===================================#
 # GIT RELEASE: Localhost cmds       #
@@ -70,14 +70,14 @@ release-patch: ## releasing patch (eg: 0.0.1 -> 0.0.2) based on semantic tagging
 	sudo chown -R ${LOCAL_OS_USER_ID}:${LOCAL_OS_GROUP_ID} ./.git
 	${GIT_SEMTAG_CMD_PREFIX} final -s patch
 
-release-patch-with-changelog: ## make -f release.mk changelog-patch && git add && git commit && make -f release.mk release-patch
+release-patch-with-changelog: ## make changelog-patch && git add && git commit && make release-patch
 	@if git status | grep 'nothing to commit, working directory clean'; then\
-		make -f release.mk changelog-patch;\
+		make changelog-patch;\
 		git status;\
 		git add CHANGELOG.md;\
-		git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]";\
+		git commit -m "Updating CHANGELOG.md via make changelog-patch for ${GIT_SEMTAG_VER_PATCH} [ci skip]";\
 		git push origin master;\
-		make -f release.mk release-patch;\
+		make release-patch;\
 	else\
 		echo "===============================================================================================";\
     	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
@@ -95,14 +95,14 @@ release-minor: ## releasing minor (eg: 0.0.2 -> 0.1.0) based on semantic tagging
 	sudo chown -R ${LOCAL_OS_USER_ID}:${LOCAL_OS_GROUP_ID} ./.git
 	${GIT_SEMTAG_CMD_PREFIX} final -s minor
 
-release-minor-with-changelog: ## make -f release.mk changelog-minor && git add && git commit && make -f release.mk release-minor
+release-minor-with-changelog: ## make changelog-minor && git add && git commit && make release-minor
 	@if git status |grep 'nothing to commit, working directory clean'; then\
-		make -f release.mk changelog-minor;\
+		make changelog-minor;\
 		git status;\
 		git add CHANGELOG.md;\
-		git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-minor for ${GIT_SEMTAG_VER_MINOR} [ci skip]";\
+		git commit -m "Updating CHANGELOG.md via make changelog-minor for ${GIT_SEMTAG_VER_MINOR} [ci skip]";\
 		git push origin master;\
-		make -f release.mk release-minor;\
+		make release-minor;\
 	else\
 		echo "===============================================================================================";\
     	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
@@ -120,14 +120,14 @@ release-major: ## releasing major (eg: 0.1.0 -> 1.0.0) based on semantic tagging
 	sudo chown -R ${LOCAL_OS_USER_ID}:${LOCAL_OS_GROUP_ID} ./.git
 	${GIT_SEMTAG_CMD_PREFIX} final -s major
 
-release-major-with-changelog: ## make -f release.mk changelog-major && git add && git commit && make -f release.mk release-major
+release-major-with-changelog: ## make changelog-major && git add && git commit && make release-major
 	@if git status |grep 'nothing to commit, working directory clean'; then\
-		make -f release.mk changelog-major;\
+		make changelog-major;\
 		git status;\
 		git add CHANGELOG.md;\
-		git commit -m "Updating CHANGELOG.md via make -f release.mk changelog-major for ${GIT_SEMTAG_VER_MAJOR} [ci skip]";\
+		git commit -m "Updating CHANGELOG.md via make changelog-major for ${GIT_SEMTAG_VER_MAJOR} [ci skip]";\
 		git push origin master;\
-		make -f release.mk release-major;\
+		make release-major;\
 	else\
 		echo "===============================================================================================";\
     	echo "Changes in working directory pending to be pushed - please check 'git status' cmd output below ";\
