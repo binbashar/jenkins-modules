@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="v0.0.17"></a>
+## [v0.0.17] - 2020-07-03
+### Pull Requests
+- Merge pull request [#22](https://github.com/binbashar/jenkins-modules/issues/22) from binbashar/BBL-84-fix-circle-release-job
+
+
 <a name="v0.0.16"></a>
 ## [v0.0.16] - 2020-07-03
 ### Pull Requests
@@ -76,7 +82,8 @@
 <a name="v0.0.1"></a>
 ## v0.0.1 - 2019-04-05
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.16...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.17...HEAD
+[v0.0.17]: https://github.com/binbashar/jenkins-modules/compare/v0.0.16...v0.0.17
 [v0.0.16]: https://github.com/binbashar/jenkins-modules/compare/v0.0.15...v0.0.16
 [v0.0.15]: https://github.com/binbashar/jenkins-modules/compare/v0.0.14...v0.0.15
 [v0.0.14]: https://github.com/binbashar/jenkins-modules/compare/v0.0.13...v0.0.14
