@@ -12,6 +12,7 @@
 !/.chglog
 !/.gitallowed
 !*.gitkeep
+!*.editorconfig
 
 # SSH keys #
 ############
