@@ -8,9 +8,11 @@
 !*.circleci
 !*.dockeringnore
 !*.hosts
-!/.gitignore
+!.hosts.example
+!*.gitignore
 !/.chglog
 !/.gitallowed
+!/.github
 !*.gitkeep
 !*.editorconfig
 
@@ -18,6 +20,7 @@
 ############
 id_rsa
 id_dsa
+keys/
 
 # OS generated files #
 ######################
@@ -70,7 +73,7 @@ Thumbs.db
 /src
 /venv
 
-# Custom Project files #
+# Custom Project tools files #
 ########################
 *.pyc
 *.pyo
@@ -78,6 +81,6 @@ Thumbs.db
 *.pgpass
 *.vagrant
 
-# Project files #
-####################
-# here
+# Project specific files #
+#################################
+/@bin
