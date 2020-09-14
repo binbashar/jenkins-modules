@@ -1,8 +1,10 @@
 <div align="center">
-    <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash.png" alt="drawing" width="350"/>
+    <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash.png" 
+    alt="drawing" width="250"/>
 </div>
 <div align="right">
-  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash-leverage-jenkins.png" alt="leverage" width="230"/>
+  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/binbash-leverage-jenkins.png" 
+  alt="leverage" width="130"/>
 </div>
 
 # jenkins-modules
@@ -708,17 +710,11 @@ node {
 ```
 
 # Release Management
-
-## Docker based makefile commands
-- https://cloud.docker.com/u/binbash/repository/docker/binbash/git-release
-- https://github.com/binbashar/jenkins-modules/blob/master/Makefile
-
-Root directory `Makefile` has the automated steps (to be integrated with **CircleCI jobs** []() )
-
 ### CircleCi PR auto-release job
 <div align="left">
-  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/circleci.png" alt="leverage-circleci" width="230"/>
+  <img src="https://raw.githubusercontent.com/binbashar/jenkins-modules/master/figures/circleci.png" alt="leverage-circleci" width="130"/>
 </div>
 
-- https://circleci.com/gh/binbashar/jenkins-modules
-- **NOTE:** Will only run after merged PR.
+- [**pipeline-job**](https://app.circleci.com/pipelines/github/binbashar/jenkins-modules) (**NOTE:** Will only run after merged PR)
+- [**releases**](https://github.com/binbashar/jenkins-modules/releases) 
+- [**changelog**](https://github.com/binbashar/jenkins-modules/blob/master/CHANGELOG.md) 
