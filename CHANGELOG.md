@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v0.0.22"></a>
+## [v0.0.22] - 2020-09-24
+
+- BBL-381 | upgrading circleci machine exec ver
+
+
 <a name="v0.0.21"></a>
 ## [v0.0.21] - 2020-09-14
 
@@ -189,7 +195,8 @@ All notable changes to this project will be documented in this file.
 - jenkins modules initial commit
 
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.21...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.22...HEAD
+[v0.0.22]: https://github.com/binbashar/jenkins-modules/compare/v0.0.21...v0.0.22
 [v0.0.21]: https://github.com/binbashar/jenkins-modules/compare/v0.0.20...v0.0.21
 [v0.0.20]: https://github.com/binbashar/jenkins-modules/compare/v0.0.19...v0.0.20
 [v0.0.19]: https://github.com/binbashar/jenkins-modules/compare/v0.0.18...v0.0.19
