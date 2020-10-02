@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v0.0.24"></a>
+## [v0.0.24] - 2020-10-02
+
+- BBL-381 | adding requires for sumologic collector workflow
+
+
 <a name="v0.0.23"></a>
 ## [v0.0.23] - 2020-10-01
 
@@ -202,7 +208,8 @@ All notable changes to this project will be documented in this file.
 - jenkins modules initial commit
 
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.23...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.24...HEAD
+[v0.0.24]: https://github.com/binbashar/jenkins-modules/compare/v0.0.23...v0.0.24
 [v0.0.23]: https://github.com/binbashar/jenkins-modules/compare/v0.0.22...v0.0.23
 [v0.0.22]: https://github.com/binbashar/jenkins-modules/compare/v0.0.21...v0.0.22
 [v0.0.21]: https://github.com/binbashar/jenkins-modules/compare/v0.0.20...v0.0.21
