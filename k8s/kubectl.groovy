@@ -146,6 +146,37 @@ kubectl get pods ${useContext} -n \"${namespace}\" \
 
 /**
  ** Function:
+ * Get replicaset name and status for the given replicaset prefix and namespace.
+ *
+ ** Parameters:
+ * @param String rsPrefix  K8s replicaset name prefix
+ * @param String namespace  K8s namespace
+ * @param String context    K8s context
+ *
+ * @return rsData
+ */
+def getReplicaSet(String rsPrefix, String namespace = "default", String context = null) {
+    def rsData = [id: '', status: '']
+    String useContext = (context) ? " --context \"${context}\"" : ""
+    String cmd = """
+kubectl get pods ${useContext} -n \"${namespace}\" \
+| grep \"${rsPrefix}\" \
+| head -1 \
+| awk '{print \$1,\$3}'
+"""
+    String rsOut = sh(returnStdout: true, script: cmd).trim()
+
+    String[] rsValues = rsOut.split(" ")
+    if (rsValues.length > 1) {
+        rsData['id'] = rsValues[0]
+        rsData['status'] = rsValues[1]
+    }
+
+    return rsData
+}
+
+/**
+ ** Function:
  *  Set the given K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config) as the current context.
  *
  ** Parameters:
