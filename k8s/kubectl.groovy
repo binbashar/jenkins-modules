@@ -54,16 +54,16 @@ kubectl exec ${useContext} -n \"${namespace}\" ${cmdOptions} ${podId} -- ${cmd}
     return podOut
 }
 
+/*
+ ** Function:
+ * Get current K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config).
+ */
 def getContext() {
     String cmd = 'kubectl config current-context'
     String context = sh(returnStdout: true, script: cmd).trim()
     return context
 }
 
-/*
- ** Function:
- * Get current K8s kubectl kubeconfig context (KUBECONFIG=~/.kube/config).
- */
 /**
  ** Function:
  * Get pod name and status for the given pod prefix and optional namespace.
@@ -111,6 +111,68 @@ kubectl get pods ${useContext} -n \"${namespace}\" \
     }
 
     return podData
+}
+
+/**
+ ** Function:
+ * Get job name and status for the given job prefix and namespace.
+ *
+ ** Parameters:
+ * @param String jobPrefix  K8s job name prefix
+ * @param String namespace  K8s namespace
+ * @param String context    K8s context
+ *
+ * @return jobData
+ */
+def getJob(String jobPrefix, String namespace = "default", String context = null) {
+    def jobData = [id: '', status: '']
+    String useContext = (context) ? " --context \"${context}\"" : ""
+    String cmd = """
+kubectl get pods ${useContext} -n \"${namespace}\" \
+| grep \"${jobPrefix}\" \
+| head -1 \
+| awk '{print \$1,\$3}'
+"""
+    String jobOut = sh(returnStdout: true, script: cmd).trim()
+
+    String[] jobValues = jobOut.split(" ")
+    if (jobValues.length > 1) {
+        jobData['id'] = jobValues[0]
+        jobData['status'] = jobValues[1]
+    }
+
+    return jobData
+}
+
+/**
+ ** Function:
+ * Get replicaset name and status for the given replicaset prefix and namespace.
+ *
+ ** Parameters:
+ * @param String rsPrefix  K8s replicaset name prefix
+ * @param String namespace  K8s namespace
+ * @param String context    K8s context
+ *
+ * @return rsData
+ */
+def getReplicaSet(String rsPrefix, String namespace = "default", String context = null) {
+    def rsData = [id: '', status: '']
+    String useContext = (context) ? " --context \"${context}\"" : ""
+    String cmd = """
+kubectl get pods ${useContext} -n \"${namespace}\" \
+| grep \"${rsPrefix}\" \
+| head -1 \
+| awk '{print \$1,\$3}'
+"""
+    String rsOut = sh(returnStdout: true, script: cmd).trim()
+
+    String[] rsValues = rsOut.split(" ")
+    if (rsValues.length > 1) {
+        rsData['id'] = rsValues[0]
+        rsData['status'] = rsValues[1]
+    }
+
+    return rsData
 }
 
 /**

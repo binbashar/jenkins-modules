@@ -30,4 +30,18 @@ def replace(String sourceFile, String destFile, HashMap placeholderValues, Strin
     writeFile file: destFile, text: fileContents
 }
 
+/*
+ * This takes the given input, which is expected to have placeholders in the form $VARIABLE
+ * or ${VARIABLE}, and replaces any placeholders with the variables provided. It returns
+ * the result of that.
+ *
+ * @param String input      The input template as a string
+ * @param HashMap variables A list of key/value pairs that will be used to replace any placeholders in the input template
+ * @return String The template with all placeholders replaced
+ */
+def renderTemplate(String input, HashMap variables) {
+    def engine = new groovy.text.StreamingTemplateEngine()
+    return engine.createTemplate(input).make(variables).toString()
+}
+
 return this
