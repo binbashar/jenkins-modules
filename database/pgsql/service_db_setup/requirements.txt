@@ -1,0 +1,3 @@
+yaenv==1.2.2
+click==8.0.0
+psycopg2==2.8.6
