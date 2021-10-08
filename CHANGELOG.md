@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v0.0.27"></a>
+## [v0.0.27] - 2021-10-08
+
+- Create FUNDING.yml
+
+
 <a name="v0.0.26"></a>
 ## [v0.0.26] - 2021-07-14
 
@@ -220,7 +226,8 @@ All notable changes to this project will be documented in this file.
 - jenkins modules initial commit
 
 
-[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.26...HEAD
+[Unreleased]: https://github.com/binbashar/jenkins-modules/compare/v0.0.27...HEAD
+[v0.0.27]: https://github.com/binbashar/jenkins-modules/compare/v0.0.26...v0.0.27
 [v0.0.26]: https://github.com/binbashar/jenkins-modules/compare/v0.0.25...v0.0.26
 [v0.0.25]: https://github.com/binbashar/jenkins-modules/compare/v0.0.24...v0.0.25
 [v0.0.24]: https://github.com/binbashar/jenkins-modules/compare/v0.0.23...v0.0.24
